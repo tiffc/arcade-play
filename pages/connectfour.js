@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import styles from '../styles/ConnectFour.module.css'
+import styles from '../styles/connectfour.module.css'
 
 function Square(props) {
 	const style = { background: props.color };
@@ -228,7 +228,7 @@ class ConnectFour extends React.Component {
   }
 }
 
-export default ConnectFour;
+export default ConnectFour
 
 // ========================================
 

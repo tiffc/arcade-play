@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import styles from '../styles/TicTacToe.module.css'
+import styles from '../styles/tictactoe.module.css'
 
 function Square(props) {
   return (
