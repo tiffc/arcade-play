@@ -171,7 +171,7 @@ class ConnectFour extends React.Component {
 					borderRadius: '50%'
 				};
 				const piece = <div style={style}></div>;
-	      status = <div style={{display: 'flex', minWidth: '115px'}}>{piece}<b>&nbsp;turn</b></div>;
+	      status = <div style={{display: 'flex', minWidth: '115px'}}>{piece}&nbsp;turn</div>;
 	    }
 
 	    top = (
@@ -220,7 +220,7 @@ class ConnectFour extends React.Component {
 	    	<div className="twinkling"></div>
 	  		{top}
 	    	<div className="container">
-	    		<h1 style={{fontSize:'48px',fontFamily:'Copperplate, fantasy'}}>Connect Four</h1>
+	    		<h1 style={{fontSize:'48px'}}>Connect Four</h1>
 	    		{display}
 				</div>
 			</div>

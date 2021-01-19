@@ -10,7 +10,7 @@ html {
 
 body {
   background: none;
-  font: 18px Arial;
+  font-family: Courier, monospace;
   color: white;
   margin: 20px;
 }
@@ -94,7 +94,7 @@ a {
 }
 
 .mode {
-  background: rgb(255, 255, 255, 0.05);
+  background: rgb(255, 255, 255, 0.1);
   min-width: 25vw;
   margin: 1rem;
   flex-basis: 45%;
@@ -104,4 +104,5 @@ a {
   text-decoration: none;
   border-radius: 10px;
   transition: color 0.15s ease, border-color 0.15s ease;
+  font: 18px Arial;
 }

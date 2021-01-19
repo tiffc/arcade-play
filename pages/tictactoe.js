@@ -2,12 +2,20 @@ import React from 'react'
 import Link from 'next/link'
 import styles from '../styles/tictactoe.module.css'
 
-function Square(props) {
-  return (
-    <button className={styles.square} onClick={props.onClick}>
-      {props.value}
-    </button>
-  );
+class Square extends React.Component {
+  render() {
+    let mark = this.props.value;
+    if (this.props.value == 'X') {
+      mark = <img src="/X.png" style={{background:'black'}} className={styles.mark}></img>;
+    } else if (this.props.value == 'O') {
+      mark = <img src="/O.png" className={styles.mark}></img>
+    }
+    return (
+      <button className={styles.square} onClick={this.props.onClick}>
+        {mark}
+      </button>
+    );
+  }
 }
 
 class Board extends React.Component {
@@ -140,7 +148,7 @@ class TicTacToe extends React.Component {
           </div>
         );
       } else {
-        status = <div><b><span style={{fontFamily:'Chalkduster, fantasy'}}>{this.state.xIsNext ? 'X' : 'O'}</span> turn</b></div>;
+        status = <div>{this.state.xIsNext ? <img src="/X.png" style={{filter:'invert(1)',height:'18px',width:'18px'}} className={styles.mark}></img> : <img src="/O.png" style={{filter:'invert(1)',height:'18px',width:'18px'}} className={styles.mark}></img>} turn</div>;
       }
 
       top = (
@@ -189,7 +197,7 @@ class TicTacToe extends React.Component {
         <div className="twinkling"></div>
         {top}
         <div className="container">
-          <h1 style={{fontSize:'48px',fontFamily:'Chalkduster, fantasy'}}>Tic-Tac-Toe</h1>
+          <h1 style={{fontSize:'48px'}}>Tic-Tac-Toe</h1>
           <br/>
           <br/>
           {display}

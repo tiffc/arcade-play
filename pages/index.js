@@ -7,13 +7,13 @@ export default function Home() {
       <div className="stars"></div>
       <div className="twinkling"></div>
       <div className="container">
-        <h1 style={{font:"72px Phosphate"}}>Arcade</h1>
+        <h1 style={{fontSize:"72px"}}>Arcade</h1>
         <div className={styles.grid}>
           <Link href="/tictactoe">
-            <a className={styles.card} style={{fontSize:'24px',fontFamily:'Chalkduster, fantasy'}}>Tic-tac-toe</a>
+            <a className={styles.card} style={{fontSize:'24px'}}>Tic-tac-toe</a>
           </Link>
           <Link href="/connectfour">
-            <a className={styles.card} style={{fontSize:'24px',fontFamily:'Copperplate, fantasy'}}>Connect Four</a>
+            <a className={styles.card} style={{fontSize:'24px'}}>Connect Four</a>
           </Link>
         </div>
       </div>
