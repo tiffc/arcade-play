@@ -5,16 +5,19 @@ import styles from '../styles/maze.module.css'
 function Square(props) {
 	let background = 'none';
 	if (props.current) {
-		background = 'rgb(255, 255, 255, 0.5)';
+		background = 'rgb(70, 130, 180)';
 	} else if (props.properties[4]) {
-		background = 'rgb(255, 255, 255, 0.25)';
+		background = 'rgb(70, 130, 180, 0.75)';
 	}
+	const size = (480 / props.size) + 'px';
 	const style = {
 		borderRight: props.properties[0] ? '1px solid white' : 'none',
 		borderBottom: props.properties[1] ? '1px solid white' : 'none',
 		borderLeft: props.properties[2] ? '1px solid white' : 'none',
 		borderTop: props.properties[3] ? '1px solid white' : 'none',
-		background: background
+		background: background,
+		width: size,
+		height: size
 	};
   return (
     <div className={styles.square} style={style}></div>
@@ -29,8 +32,9 @@ class Maze extends React.Component {
 		}
     return (
       <Square
-      	key={20*i+j}
+      	key={this.props.size*i+j}
       	properties={this.props.squares[i][j]}
+      	size={this.props.size}
       	current={current}
       />
     );
@@ -38,7 +42,7 @@ class Maze extends React.Component {
 
 	renderRow(i) {
   	const rows = [];
-  	for (let j = 0; j < 20; j++) {
+  	for (let j = 0; j < this.props.size; j++) {
   		rows.push(this.renderSquare(i, j));
   	}
   	return (
@@ -50,7 +54,7 @@ class Maze extends React.Component {
 
 	render() {
   	const maze = []
-  	for (let i = 0; i < 20; i++) {
+  	for (let i = 0; i < this.props.size; i++) {
   		maze.push(this.renderRow(i));
   	}
     return (
@@ -64,37 +68,57 @@ class Maze extends React.Component {
 class MazeGame extends React.Component {
 	constructor(props) {
     super(props);
-    const squares = [];
-    for (let i = 0; i < 20; i++) {
-    	const row = [];
-    	for (let j = 0; j < 20; j++) {
-    		row.push([0,0,0,0,0]);
-    	}
-    	squares.push(row);
-    }
-    const startX = Math.floor(Math.random() * 20);
-		const startY = 0;
-		const endX = Math.floor(Math.random() * 20);
-		const endY = 19;
-    createMaze(squares, startX, startY, endX, endY);
     this.state = {
-      squares: squares,
-      startX: startX,
-      startY: startY,
-      endX: endX,
-      endY: endY,
+    	size: null,
+      squares: null,
+      startX: null,
+      startY: null,
+      endX: null,
+      endY: null,
       currX: null,
       currY: null,
       history: []
     };
   }
 
+  selectSize(size) {
+  	const squares = [];
+    for (let i = 0; i < size; i++) {
+    	const row = [];
+    	for (let j = 0; j < size; j++) {
+    		row.push([0,0,0,0,0]);
+    	}
+    	squares.push(row);
+    }
+    const startX = Math.floor(Math.random() * size);
+		const startY = 0;
+		const endX = Math.floor(Math.random() * size);
+		const endY = size-1;
+    createMaze(squares, startX, startY, endX, endY);
+  	this.setState({
+  		size: size,
+  		squares: squares,
+      startX: startX,
+      startY: startY,
+      endX: endX,
+      endY: endY
+  	});
+  }
+
+  changeSize(size) {
+  	this.selectSize(size);
+  	this.setState({
+  		currX: null,
+  		currY: null,
+  	});
+  }
+
   handleKey(event) {
   	if (this.state.currX != this.state.endX || this.state.currY != this.state.endY) {
   		const squares = [];
-  		for (let i = 0; i < 20; i++) {
+  		for (let i = 0; i < this.state.size; i++) {
 	  		let row = [];
-	  		for (let j = 0; j < 20; j++) {
+	  		for (let j = 0; j < this.state.size; j++) {
 	  			row.push(this.state.squares[i][j].slice());
 	  		}
 	  		squares.push(row);
@@ -125,7 +149,7 @@ class MazeGame extends React.Component {
 	  		squares[currX][currY][4] = 1;
 	  	}
 	  	// right
-	  	if (event.keyCode === 39 && currY+1 < 20 && !squares[currX][currY][0]) {
+	  	if (event.keyCode === 39 && currY+1 < this.state.size && !squares[currX][currY][0]) {
 	  		if (history.length && history[history.length-1] === 2) {
 	  			squares[currX][currY][4] = 0;
 	  			history.pop();
@@ -136,7 +160,7 @@ class MazeGame extends React.Component {
 	  		squares[currX][currY][4] = 1;
 	  	}
 	  	// down
-	  	if (event.keyCode === 40 && currX+1 >= 0 && !squares[currX][currY][1]) {
+	  	if (event.keyCode === 40 && currX+1 < this.state.size && !squares[currX][currY][1]) {
 	  		if (history.length && history[history.length-1] === 3) {
 	  			squares[currX][currY][4] = 0;
 	  			history.pop();
@@ -157,9 +181,9 @@ class MazeGame extends React.Component {
 
   start() {
   	const squares = [];
-  	for (let i = 0; i < 20; i++) {
+  	for (let i = 0; i < this.state.size; i++) {
     	const row = [];
-    	for (let j = 0; j < 20; j++) {
+    	for (let j = 0; j < this.state.size; j++) {
     		row.push(this.state.squares[i][j].slice());
     	}
     	squares.push(row);
@@ -174,9 +198,9 @@ class MazeGame extends React.Component {
 
   restart() {
   	const squares = [];
-  	for (let i = 0; i < 20; i++) {
+  	for (let i = 0; i < this.state.size; i++) {
     	const row = [];
-    	for (let j = 0; j < 20; j++) {
+    	for (let j = 0; j < this.state.size; j++) {
     		row.push(this.state.squares[i][j].slice());
     		row[j][4] = 0;
     	}
@@ -192,16 +216,16 @@ class MazeGame extends React.Component {
 
   replay() {
   	const squares = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < this.state.size; i++) {
     	const row = [];
-    	for (let j = 0; j < 20; j++) {
+    	for (let j = 0; j < this.state.size; j++) {
     		row.push([0,0,0,0,0]);
     	}
     	squares.push(row);
     }
-    const startX = Math.floor(Math.random() * 20);
+    const startX = Math.floor(Math.random() * this.state.size);
 		const startY = 0;
-		const endX = Math.floor(Math.random() * 20);
+		const endX = Math.floor(Math.random() * this.state.size);
 		const endY = 19;
     createMaze(squares, startX, startY, endX, endY);
     // squares[startX][startY][4] = 1;
@@ -218,42 +242,74 @@ class MazeGame extends React.Component {
   }
 
 	render() {
-		let status = <button className="button" onClick={() => this.start()}>Start</button>;
-		if (this.state.currX === this.state.endX && this.state.currY === this.state.endY) {
-			status = (
-				<div>
-					<b>Finish!</b>
-	    		<br/>
-	    		<br/>
-	    		<br/>
-	    		<button className="button" onClick={() => this.replay()}>Play again</button>
+		let display, top;
+		if (this.state.size) {
+			let status = <button className="button" onClick={() => this.start()}>Start</button>;
+			if (this.state.currX === this.state.endX && this.state.currY === this.state.endY) {
+				status = (
+					<div>
+						<b>Finish!</b>
+		    		<br/>
+		    		<br/>
+		    		<br/>
+		    		<button className="button" onClick={() => this.replay()}>Play again</button>
+					</div>
+				);
+			} else if (this.state.currX != null && this.state.currY != null) {
+				status = <button className="button" onClick={() => this.restart()}>Start over</button>;
+			}
+			top = (
+	    	<div style={{'display':'flex'}}>
+		    	<Link href="/">
+		    		<a className="button">&larr;</a>
+		      </Link>
+	  			<button className="button" style={{marginLeft:'auto'}} onClick={() => this.changeSize()}>Change mode</button>
+	  		</div>
+  		);
+
+  		display = (
+	    	<div tabIndex="0" onKeyDown={(event) => this.handleKey(event)} className={styles.game}>
+          <Maze 
+          	size={this.state.size}
+            squares={this.state.squares}
+        		currX={this.state.currX}
+        		currY={this.state.currY}
+          />
+	        <div className={styles.gameinfo}>
+	          {status}
+	        </div>
+	      </div>
+	    );
+		} else {
+			top = (
+				<div style={{display:'flex'}}>
+		    	<Link href="/">
+		    		<a className="button">&larr;</a>
+		      </Link>
+		    </div>
+  		);
+
+			display = (
+				<div className="mode">
+					<h3>Game Mode</h3>
+					<button className="button" onClick={() => this.selectSize(20)}>20 x 20</button>
+					<br/>
+					<br/>
+					<button className="button" onClick={() => this.selectSize(30)}>30 x 30</button>
+					<br/>
+					<br/>
+					<button className="button" onClick={() => this.selectSize(50)}>50 x 50</button>
 				</div>
 			);
-		} else if (this.state.currX != null && this.state.currY != null) {
-			status = <button className="button" onClick={() => this.restart()}>Start over</button>;
 		}
 		return (
 			<div>
         <div className="stars"></div>
         <div className="twinkling"></div>
-        <div style={{display:'flex'}}>
-		    	<Link href="/">
-		    		<a className="button">&larr;</a>
-		      </Link>
-		    </div>
+	    	{top}
         <div className="container">
           <h1 style={{fontSize:'48px',fontFamily:'Courier, monospace'}}>Maze</h1>
-          <br/>
-          <div tabIndex="0" onKeyDown={(event) => this.handleKey(event)} className={styles.game}>
-          	<Maze
-          		squares={this.state.squares}
-          		currX={this.state.currX}
-          		currY={this.state.currY}
-          	/>
-	          <div className={styles.gameinfo}>
-		          {status}
-	        	</div>
-	        </div>
+          {display}
         </div>
       </div>
 		);
@@ -263,20 +319,21 @@ class MazeGame extends React.Component {
 export default MazeGame;
 
 function createMaze(maze, startX, startY, endX, endY) {
+	const N = maze.length;
 	// create maze left and right border
-	for (let x = 0; x < 20; x++) {
+	for (let x = 0; x < N; x++) {
 		if (x != startX) {
 			maze[x][0][2] = 1;
 		}
 		if (x != endX) {
-			maze[x][19][0] = 1;
+			maze[x][N-1][0] = 1;
 		}
 	}
 
 	// create maze top and bottom border
-	for (let y = 0; y < 20; y++) {
+	for (let y = 0; y < N; y++) {
 		maze[0][y][3] = 1;
-		maze[19][y][1] = 1;
+		maze[N-1][y][1] = 1;
 	}
 
 	const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
@@ -284,10 +341,10 @@ function createMaze(maze, startX, startY, endX, endY) {
 	const stack = [[startX, startY, 0]];
 	while (stack.length) {
 		let [x, y, d] = stack.pop();
-		if (visited.has(20*x+y)) {
+		if (visited.has(N*x+y)) {
 			continue;
 		}
-		visited.add(20*x+y);
+		visited.add(N*x+y);
 		if (x == endX && y == endY) {
 			continue;
 		}
@@ -296,14 +353,14 @@ function createMaze(maze, startX, startY, endX, endY) {
 			let new_d = (i+j)%4;
 			if (new_d != (d+2)%4) {
 				let [dx, dy] = directions[new_d];
-				if (x+dx >= 0 && x+dx < 20 && y+dy >= 0 && y+dy < 20 && !maze[x][y][new_d]) {
-					if (!visited.has(20*(x+dx)+(y+dy))) {
-						stack.push([x+dx, y+dy, new_d]);
+				if (x+dx >= 0 && x+dx < N && y+dy >= 0 && y+dy < N && !maze[x][y][new_d]) {
+					if (!visited.has(N*(x+dx)+(y+dy))) {
+						stack.splice(0, 0, [x+dx, y+dy, new_d]);
 						let w = (new_d+1)%4;
 						if (w != (d+2)%4) {
 							maze[x][y][w] = 1;
 							let [wx, wy] = directions[w];
-							if (x+wx >= 0 && x+wx < 20 && y+wy >= 0 && y+wy < 20) {
+							if (x+wx >= 0 && x+wx < N && y+wy >= 0 && y+wy < N) {
 								maze[x+wx][y+wy][(w+2)%4] = 1;
 							}
 						}
@@ -311,14 +368,14 @@ function createMaze(maze, startX, startY, endX, endY) {
 						if (w != (d+2)%4) {
 							maze[x][y][w] = 1;
 							let [wx, wy] = directions[w];
-							if (x+wx >= 0 && x+wx < 20 && y+wy >= 0 && y+wy < 20) {
+							if (x+wx >= 0 && x+wx < N && y+wy >= 0 && y+wy < N) {
 								maze[x+wx][y+wy][(w+2)%4] = 1;
 							}
 						}
 					} else {
 						maze[x][y][new_d] = 1;
 						let [wx, wy] = directions[new_d];
-						if (x+wx >= 0 && x+wx < 20 && y+wy >= 0 && y+wy < 20) {
+						if (x+wx >= 0 && x+wx < N && y+wy >= 0 && y+wy < N) {
 							maze[x+wx][y+wy][(new_d+2)%4] = 1;
 						}
 					}
