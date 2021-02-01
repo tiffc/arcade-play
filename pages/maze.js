@@ -110,6 +110,7 @@ class MazeGame extends React.Component {
   	this.setState({
   		currX: null,
   		currY: null,
+  		history: []
   	});
   }
 
@@ -226,9 +227,8 @@ class MazeGame extends React.Component {
     const startX = Math.floor(Math.random() * this.state.size);
 		const startY = 0;
 		const endX = Math.floor(Math.random() * this.state.size);
-		const endY = 19;
+		const endY = this.state.size-1;
     createMaze(squares, startX, startY, endX, endY);
-    // squares[startX][startY][4] = 1;
     this.setState({
       squares: squares,
       startX: startX,
