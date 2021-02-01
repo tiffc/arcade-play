@@ -7,7 +7,6 @@ export default function Home() {
       <div className="stars"></div>
       <div className="twinkling"></div>
       <div className="container">
-        <h1 style={{font:"72px"}}><b>ARCADE</b></h1>
         <h1 style={{fontSize:"72px"}}>Arcade</h1>
         <div className={styles.grid}>
           <Link href="/tictactoe">
