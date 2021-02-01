@@ -82,9 +82,12 @@ a {
 }
 
 .button:hover,
-.button:focus,
 .button:active {
   border: 2px solid #eaeaea;
+}
+
+.button:focus {
+	outline: none;
 }
 
 .selection:hover,

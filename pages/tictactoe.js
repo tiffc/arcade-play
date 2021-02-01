@@ -189,7 +189,7 @@ class TicTacToe extends React.Component {
         <div className="twinkling"></div>
         {top}
         <div className="container">
-          <h1 style={{fontSize:'48px',fontFamily:'Chalkduster, fantasy'}}>Tic-Tac-Toe</h1>
+          <h1 style={{fontSize:'48px',fontFamily:'Courier, monospace'}}>Tic-Tac-Toe</h1>
           <br/>
           <br/>
           {display}

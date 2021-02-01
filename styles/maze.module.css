@@ -1,0 +1,37 @@
+.row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.square {
+  background: none;
+  float: left;
+  /*line-height: 34px;*/
+  height: 24px;
+  margin: 0;
+  /*text-align: center;*/
+  width: 24px;
+}
+
+/*.square:focus {
+  outline: none;
+}*/
+
+/*.kbd-navigation .square:focus {
+  background: #ddd;
+}*/
+
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.game:focus {
+  outline: none;
+}
+
+.gameinfo {
+  margin-left: 20px;
+  min-width: 115px;
+}
