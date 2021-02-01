@@ -4,19 +4,25 @@
   display: table;
 }
 
+.status {
+  margin-bottom: 10px;
+}
+
+.mark {
+  width: 48px;
+  height: 48px;
+}
+
 .square {
   background: #fff;
   border: none;
   float: left;
-  font-size: 64px;
-  font-family: Chalkduster, fantasy;
-  font-weight: bold;
   line-height: 34px;
-  height: 128px;
+  height: 100px;
   margin: 3px;
-  padding: 0;
-  text-align: center;
-  width: 128px;
+  padding-top: 8px;
+  align-items: center;
+  width: 100px;
 }
 
 .square:focus {
@@ -35,4 +41,5 @@
 .gameinfo {
   margin-left: 20px;
   min-width: 115px;
+  font: 18px Arial;
 }
