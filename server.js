@@ -7,7 +7,7 @@ const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({dev});
 const nextHandler = nextApp.getRequestHandler();
 
-const port = parseInt(process.env.PORT || '3000', 10);
+const port = process.env.PORT || 3000;
 
 const players = new Map();
 const rooms = new Map();
@@ -19,11 +19,11 @@ io.on('connect', socket => {
     if (rooms.has(code) && rooms.get(code).length < 2) {
       rooms.get(code).push(id);
       console.log('Player ' + id + ' has joined game ' + code);
-      console.log('Room ' + code + ' currently has players: ' + rooms.get(code));
+      console.log('Game ' + code + ' currently has players: ' + rooms.get(code));
       if (rooms.get(code).length === 2) {
-        io.to(rooms.get(code)[0]).emit('start', 'X');
-        io.to(rooms.get(code)[1]).emit('start', 'O');
-        console.log('Player ' + rooms.get(code)[0] + ' is X and ' + rooms.get(code)[1] + ' is O')
+        io.to(rooms.get(code)[0]).emit('start', 0);
+        io.to(rooms.get(code)[1]).emit('start', 1);
+        console.log('Player ' + rooms.get(code)[0] + ' is 1 and player ' + rooms.get(code)[1] + ' is 2')
       }
     } else {
       rooms.set(code, [id]);
@@ -62,6 +62,7 @@ io.on('connect', socket => {
   })
 
   socket.on('exit', () => {
+    socket.to(players.get(socket.id)).emit('exit');
     removePlayers(socket.id);
     socket.disconnect(true);
   });
@@ -80,6 +81,6 @@ nextApp.prepare().then(() => {
 
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log(`> Ready on http://localhost:${port}`);
+    console.log(`> Ready on port:${port}`);
   });
 });

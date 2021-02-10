@@ -33,21 +33,6 @@
   100% {width: 0;}
 }
 
-.typewriter {
-  animation: type 7.5s infinite both,
-             blinkTextCursor 0.75s steps(44) infinite both;
-}
-
-@keyframes type {
-  0% {width: 0; animation-timing-function: steps(6);}
-  10% {width: 264px; animation-timing-function: steps(6);}
-  40% {width: 264px; animation-timing-function: steps(6);}
-  50% {width: 0; animation-timing-function: steps(4);}
-  58% {width: 178px; animation-timing-function: steps(4);}
-  92% {width: 178px; animation-timing-function: steps(4);}
-  100% {width: 0px; animation-timing-function: steps(4);}
-}
-
 @keyframes blinkTextCursor {
   from{border-right-color: white;}
   to{border-right-color: transparent;}

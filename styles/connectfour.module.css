@@ -11,12 +11,12 @@
   border-right: 4px ridge #4080bf;
   float: left;
   line-height: 34px;
-  height: 70px;
+  height: 64px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
-  padding-left: 4px;
-  width: 80px;
+  padding-left: 1px;
+  width: 70px;
 }
 
 .piece {
@@ -24,8 +24,8 @@
   display: block;
   background: #fff;
   border: 4px ridge #4080bf;
-  height: 65px;
-  width: 65px;
+  height: 60px;
+  width: 60px;
   border-radius: 50%;
 }
 

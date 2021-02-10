@@ -38,12 +38,12 @@ a {
   align-items: center;
 }
 
-@keyframes move-stars {
+@keyframes risingStars {
     from {background-position:0 0;}
     to {background-position:0px -10000px;}
 }
 
-@keyframes move-twink-back {
+@keyframes twinkleEffect {
     from {background-position:0 0;}
     to {background-position:-10000px 5000px;}
 }
@@ -62,16 +62,29 @@ a {
 .stars {
   background:#000 url(http://www.script-tutorials.com/demos/360/images/stars.png) repeat top center;
   z-index:-2;
-  animation:move-stars 400s linear infinite;
+  animation:risingStars 400s linear infinite;
 }
 
-.twinkling{
+.twinkling {
   background:transparent url(http://www.script-tutorials.com/demos/360/images/twinkling.png) repeat top center;
   z-index:-1;
-  animation:move-twink-back 200s linear infinite;
+  animation:twinkleEffect 200s linear infinite;
 }
 
-.button, .selection {
+.mode {
+  background: rgb(255, 255, 255, 0.1);
+  min-width: 25vw;
+  margin: 1rem;
+  flex-basis: 45%;
+  padding: 1.5rem;
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.button {
   background: rgb(255, 255, 255, 0.1);
   border: 2px solid rgb(255, 255, 255, 0.1);
   border-radius: 10px;
@@ -92,21 +105,20 @@ a {
 	outline: none;
 }
 
-.selection:hover,
-.selection:focus,
-.selection:active {
-  border: 2px solid #eaeaea;
+input {
+  height: 40px;
+  width: 100px;
+  background: none;
+  border: 2px solid rgb(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: transparent;
+  text-shadow: 0px 0px 1px white;
+  text-align: center;
+  font-size: 18px;
 }
 
-.mode {
-  background: rgb(255, 255, 255, 0.1);
-  min-width: 25vw;
-  margin: 1rem;
-  flex-basis: 45%;
-  padding: 1.5rem;
-  text-align: center;
-  color: inherit;
-  text-decoration: none;
-  border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+input:focus,
+input:active {
+  border: 2px solid white;
+  outline: none;
 }

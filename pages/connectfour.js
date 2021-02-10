@@ -145,7 +145,7 @@ class ConnectFour extends React.Component {
 				};
 				const piece = <div style={style}></div>;
 	      status = (
-	      	<div style={{minWidth: '115px'}}>
+	      	<div>
 	      		<div style={{display: 'flex'}}>{piece}<b>&nbsp;wins!</b></div>
 	      		<br/>
 	      		<br/>
@@ -155,7 +155,7 @@ class ConnectFour extends React.Component {
 	      );
 	    } else if (this.state.moves === 42) {
 	    	status = (
-	      	<div style={{minWidth: '115px'}}>
+	      	<div>
 	      		<b>Draw!</b>
 	      		<br/>
 	      		<br/>
@@ -171,7 +171,7 @@ class ConnectFour extends React.Component {
 					borderRadius: '50%'
 				};
 				const piece = <div style={style}></div>;
-	      status = <div style={{display: 'flex', minWidth: '115px'}}>{piece}&nbsp;turn</div>;
+	      status = <div style={{display: 'flex'}}>{piece}&nbsp;turn</div>;
 	    }
 
 	    top = (
@@ -210,6 +210,12 @@ class ConnectFour extends React.Component {
 					<br/>
 					<br/>
 					<button className="button" onClick={() => this.selectMode('twoplayer')}>Two player</button>
+					<br/>
+					<br/>
+					<Link href="/connectfour-interactive">
+            <a className="button">Invite or join a friend</a>
+          </Link>
+          <br/>
 				</div>
 			);
 	  }
@@ -228,6 +234,7 @@ class ConnectFour extends React.Component {
   }
 }
 
+export {Square, Board, calculateWinner}
 export default ConnectFour
 
 // ========================================
