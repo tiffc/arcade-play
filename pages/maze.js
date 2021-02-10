@@ -268,7 +268,7 @@ class MazeGame extends React.Component {
   		);
 
   		display = (
-	    	<div tabIndex="0" onKeyDown={(event) => this.handleKey(event)} className={styles.game}>
+	    	<div tabIndex="0" ref={this.ref} onKeyDown={(event) => this.handleKey(event)} className={styles.game}>
           <Maze 
           	size={this.state.size}
             squares={this.state.squares}
@@ -308,7 +308,7 @@ class MazeGame extends React.Component {
         <div className="twinkling"></div>
 	    	{top}
         <div className="container">
-          <h1 style={{fontSize:'48px',fontFamily:'Courier, monospace'}}>Maze</h1>
+          <h1 style={{fontSize:'48px',fontFamily:'Maven Pro, sans-serif'}}>Maze</h1>
           {display}
         </div>
       </div>

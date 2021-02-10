@@ -220,7 +220,7 @@ class ConnectFour extends React.Component {
 	    	<div className="twinkling"></div>
 	  		{top}
 	    	<div className="container">
-	    		<h1 style={{fontSize:'48px'}}>Connect Four</h1>
+	    		<h1 style={{fontSize:'60px',fontFamily: 'Rajdhani, sans-serif'}}>Connect Four</h1>
 	    		{display}
 				</div>
 			</div>

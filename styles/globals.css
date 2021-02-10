@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Maven+Pro&family=Rajdhani&display=swap');
+
 html,
 body {
   padding: 0;
@@ -10,7 +12,7 @@ html {
 
 body {
   background: none;
-  font-family: Courier, monospace;
+  font: 18px Arial;
   color: white;
   margin: 20px;
 }
@@ -107,5 +109,4 @@ a {
   text-decoration: none;
   border-radius: 10px;
   transition: color 0.15s ease, border-color 0.15s ease;
-  font: 18px Arial;
 }

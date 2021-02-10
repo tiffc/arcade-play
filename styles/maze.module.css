@@ -7,24 +7,12 @@
 .square {
   background: none;
   float: left;
-  /*line-height: 34px;*/
-  height: 24px;
-  margin: 0;
-  /*text-align: center;*/
-  width: 24px;
 }
-
-/*.square:focus {
-  outline: none;
-}*/
-
-/*.kbd-navigation .square:focus {
-  background: #ddd;
-}*/
 
 .game {
   display: flex;
   flex-direction: row;
+  padding: 2px;
 }
 
 .game:focus {

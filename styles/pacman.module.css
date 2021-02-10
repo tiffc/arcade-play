@@ -1,0 +1,44 @@
+.row:after {
+  clear: both;
+  content: "";
+  display: table;
+}
+
+.square {
+  box-sizing: border-box;
+  background: none;
+  float: left;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+}
+
+.food {
+  border: 1px solid transparent;
+  height: 24px;
+  width: 24px;
+  z-index: -1;
+}
+
+.game {
+  display: flex;
+  flex-direction: row;
+}
+
+.game:focus {
+  outline: none;
+}
+
+.gameinfo {
+  margin-left: 20px;
+  min-width: 115px;
+  font: 18px Arial;
+}
+
+.pacman {
+  height: 470px;
+  width: 382px;
+  border-radius: 5px;
+  margin: 20px auto;
+  background: yellow;
+}

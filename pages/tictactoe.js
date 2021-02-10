@@ -2,20 +2,12 @@ import React from 'react'
 import Link from 'next/link'
 import styles from '../styles/tictactoe.module.css'
 
-class Square extends React.Component {
-  render() {
-    let mark = this.props.value;
-    if (this.props.value == 'X') {
-      mark = <img src="/X.png" style={{background:'black'}} className={styles.mark}></img>;
-    } else if (this.props.value == 'O') {
-      mark = <img src="/O.png" className={styles.mark}></img>
-    }
-    return (
-      <button className={styles.square} onClick={this.props.onClick}>
-        {mark}
-      </button>
-    );
-  }
+function Square(props) {
+  return (
+    <button className={styles.square} onClick={props.onClick}>
+      {props.value}
+    </button>
+  );
 }
 
 class Board extends React.Component {
@@ -122,7 +114,8 @@ class TicTacToe extends React.Component {
   }
 
   render() {
-    let display, top;
+    let display;
+    let modeButtonStyle = {display:'none'};
     if (this.state.mode) {
       const winner = calculateWinner(this.state.squares);
 
@@ -130,7 +123,7 @@ class TicTacToe extends React.Component {
       if (winner) {
         status = (
           <div>
-            <b>{winner} wins!</b>
+            <b><span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{winner}</b></span> wins!</b>
             <br/>
             <br/>
             <br/>
@@ -148,17 +141,10 @@ class TicTacToe extends React.Component {
           </div>
         );
       } else {
-        status = <div>{this.state.xIsNext ? <img src="/X.png" style={{filter:'invert(1)',height:'18px',width:'18px'}} className={styles.mark}></img> : <img src="/O.png" style={{filter:'invert(1)',height:'18px',width:'18px'}} className={styles.mark}></img>} turn</div>;
+        status = <div><span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{this.state.xIsNext ? 'X' : 'O'}</b></span> turn</div>;
       }
 
-      top = (
-        <div style={{'display':'flex'}}>
-          <Link href="/">
-            <a className="button">&larr;</a>
-          </Link>
-          <button className="button" style={{marginLeft:'auto'}} onClick={() => this.changeMode()}>Change mode</button>
-        </div>
-      );
+      modeButtonStyle = {display:'inline', marginLeft:'auto'};
 
       display = (
         <div className={styles.game}>
@@ -172,21 +158,19 @@ class TicTacToe extends React.Component {
         </div>
       );
     } else {
-      top = (
-        <div style={{display:'flex'}}>
-          <Link href="/">
-            <a className="button">&larr;</a>
-          </Link>
-        </div>
-      );
-
       display = (
         <div className="mode">
           <h3>Game Mode</h3>
-          <button className="selection" onClick={() => this.selectMode('singleplayer')}>Single player</button>
+          <button className="button" onClick={() => this.selectMode('singleplayer')}>Single player</button>
           <br/>
           <br/>
-          <button className="selection" onClick={() => this.selectMode('twoplayer')}>Two player</button>
+          <button className="button" onClick={() => this.selectMode('twoplayer')}>Two player</button>
+          <br/>
+          <br/>
+          <Link href="/tictactoe-interactive">
+            <a className="button">Invite or join a friend</a>
+          </Link>
+          <br/>
         </div>
       );
     }
@@ -195,11 +179,14 @@ class TicTacToe extends React.Component {
       <div>
         <div className="stars"></div>
         <div className="twinkling"></div>
-        {top}
+        <div style={{display:'flex'}}>
+          <Link href="/">
+            <a className="button">&larr;</a>
+          </Link>
+          <button className="button" style={modeButtonStyle} onClick={() => this.changeMode()}>Change mode</button>
+        </div>
         <div className="container">
-          <h1 style={{fontSize:'48px'}}>Tic-Tac-Toe</h1>
-          <br/>
-          <br/>
+          <h1 style={{fontSize:'60px', fontFamily: 'Indie Flower, cursive'}}>Tic-Tac-Toe</h1>
           {display}
         </div>
       </div>
@@ -207,6 +194,7 @@ class TicTacToe extends React.Component {
   }
 }
 
+export {Square, Board, calculateWinner}
 export default TicTacToe
 
 // ========================================

@@ -23,6 +23,8 @@
   padding-top: 8px;
   align-items: center;
   width: 100px;
+  font-family: 'Indie Flower', cursive;
+  font-size: 64px;
 }
 
 .square:focus {
@@ -42,4 +44,22 @@
   margin-left: 20px;
   min-width: 115px;
   font: 18px Arial;
+}
+
+.box {
+  height: 40px;
+  width: 100px;
+  background: none;
+  border: 1px solid white;
+  border-radius: 8px;
+  font: 18px Arial;
+  color: transparent;
+  text-shadow: 0px 0px 1px white;
+  text-align: center;
+}
+
+.box:focus,
+.box:active {
+  border: 2px solid white;
+  outline: none;
 }
