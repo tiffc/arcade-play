@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Head from 'next/head';
 import io from 'socket.io-client';
+import { useRouter } from 'next/router'
+import { CSSTransition } from 'react-transition-group'
 import styles from '../styles/tictactoe.module.css';
 import { Square, Board, calculateWinner } from './tictactoe';
-
 
 const socket = io();
 
 export default function TicTacToeInteractive() {
 
+	const router = useRouter();
+	const [inProp, setInProp] = useState(true);
 	const [squares, setSquares] = useState(Array(9).fill(null));
 	const [moves, setMoves] = useState(0);
 	const [next, setNext] = useState('X');
@@ -35,6 +39,14 @@ export default function TicTacToeInteractive() {
 		});
 		render();
 	}, [socket, step, code, squares, player, moves, next]);
+
+	const exit = (path) => {
+    setInProp(false);
+    router.prefetch(path);
+    setTimeout(() => {router.push(path)}, 500);
+    socket.emit('exit');
+	  socket.disconnect();
+  }
 
   const handleClick = (i) => {
     if (calculateWinner(squares) || squares[i] || next != player) {
@@ -65,10 +77,7 @@ export default function TicTacToeInteractive() {
   }
 
   const createGame = () => {
-    let gen_code = 0;
-    for (let i = 0; i < 4; i++) {
-      gen_code = (gen_code * 10) + Math.floor(Math.random() * 10);
-    }
+    const gen_code = Math.floor(Math.random() * 9000 + 1000);
     setCode(gen_code);
     setStep('waiting');
     socket.emit('game', gen_code.toString());
@@ -84,11 +93,6 @@ export default function TicTacToeInteractive() {
   	}
     socket.emit('game', code);
     setStep('waiting');
-  }
-
-  const exit = () => {
-  	socket.emit('exit');
-	  socket.disconnect();
   }
 
 	const render = () => {
@@ -166,7 +170,6 @@ export default function TicTacToeInteractive() {
       display = (
         <div className="mode">
           <h3>Interactive Game Mode</h3>
-          <br/>
           <button className="button" onClick={() => createGame()}>Create game</button>
           <br/>
           <br/>
@@ -180,17 +183,23 @@ export default function TicTacToeInteractive() {
 
 	return (
 		<div>
-      <div className="stars"></div>
-      <div className="twinkling"></div>
-      <div style={{display:'flex'}}>
-        <Link href="/">
-          <a className="button" onClick={() => exit()}>&larr;</a>
-        </Link>
-      </div>
-      <div className="container">
-        <h1 style={{fontSize:'60px',fontFamily:'Indie Flower, cursive'}}>Tic-Tac-Toe</h1>
-        {display}
-      </div>
+			<Head>
+        <title>Tic-Tac-Toe</title>
+      </Head>
+      <CSSTransition in={inProp} enter={false} unmountOnExit timeout={500} classNames="page">
+        <div>
+		      <div style={{display:'flex'}}>
+		        <button className="button" onClick={() => exit('/')}>&larr;</button>
+		      </div>
+		      <div className="container">
+		        <h1 style={{fontSize:'60px',fontFamily:'Indie Flower, cursive'}}>Tic-Tac-Toe</h1>
+		        {display}
+		      </div>
+		    </div>
+		  </CSSTransition>
+      <CSSTransition in={inProp} enter={false} unmountOnExit timeout={500} classNames="panel-transition">
+        <div className="panel"/>
+      </CSSTransition>
     </div>
 	);
 }

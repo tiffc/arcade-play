@@ -1,5 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
+import Head from 'next/head'
+import { CSSTransition } from 'react-transition-group'
 import styles from '../styles/connectfour.module.css'
 
 function Square(props) {
@@ -64,6 +66,12 @@ class ConnectFour extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.setState({
+      inProp: true
+    });
+  }
+  
   selectMode(mode) {
   	this.setState({
   		mode: mode
@@ -131,7 +139,8 @@ class ConnectFour extends React.Component {
   }
 
   render() {
-  	let display, top;
+  	let display;
+  	let modeButtonStyle = {display:'none'};
   	if (this.state.mode) {
 	    const winner = calculateWinner(this.state.columns);
 
@@ -174,16 +183,9 @@ class ConnectFour extends React.Component {
 	      status = <div style={{display: 'flex'}}>{piece}&nbsp;turn</div>;
 	    }
 
-	    top = (
-	    	<div style={{'display':'flex'}}>
-		    	<Link href="/">
-		    		<a className="button">&larr;</a>
-		      </Link>
-	  			<button className="button" style={{marginLeft:'auto'}} onClick={() => this.changeMode()}>Change mode</button>
-	  		</div>
-  		);
+	    modeButtonStyle = {display:'inline', marginLeft:'auto'};
 
-  		display = (
+	    display = (
 	    	<div className={styles.game}>
           <Board 
             columns={this.state.columns}
@@ -195,14 +197,6 @@ class ConnectFour extends React.Component {
 	      </div>
 	    );
 	  } else {
-	  	top = (
-				<div style={{display:'flex'}}>
-		    	<Link href="/">
-		    		<a className="button">&larr;</a>
-		      </Link>
-		    </div>
-  		);
-
 			display = (
 				<div className="mode">
 					<h3>Game Mode</h3>
@@ -222,13 +216,26 @@ class ConnectFour extends React.Component {
 
     return (
     	<div>
-	    	<div className="stars"></div>
-	    	<div className="twinkling"></div>
-	  		{top}
-	    	<div className="container">
-	    		<h1 style={{fontSize:'60px',fontFamily: 'Rajdhani, sans-serif'}}>Connect Four</h1>
-	    		{display}
-				</div>
+	    	<Head>
+	        <title>Connect Four</title>
+	      </Head>
+	      <CSSTransition in={this.state.inProp} timeout={500} classNames="page">
+	      	<div>
+			  		<div style={{'display':'flex'}}>
+				    	<Link href="/">
+				    		<a className="button">&larr;</a>
+				      </Link>
+			  			<button className="button" style={modeButtonStyle} onClick={() => this.changeMode()}>Change mode</button>
+			  		</div>
+			    	<div className="container">
+			    		<h1 style={{fontSize:'60px',fontFamily: 'Rajdhani, sans-serif'}}>Connect Four</h1>
+			    		{display}
+						</div>
+					</div>
+				</CSSTransition>
+				<CSSTransition in={this.state.inProp} timeout={500} classNames="panel-transition">
+          <div className="panel"/>
+        </CSSTransition>
 			</div>
     );
   }

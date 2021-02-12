@@ -45,3 +45,15 @@
   min-width: 115px;
   font: 18px Arial;
 }
+
+.starsTransition {
+  background:rgb(255, 255, 255, 0.1);
+  background-size: 100% 100%;
+  z-index: 999;
+  animation:transition 1s linear 1 normal;
+}
+
+@keyframes transition {
+    from {background-position:0 0;}
+    to {background-position:0px -10000px;}
+}

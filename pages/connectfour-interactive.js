@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Head from 'next/head';
 import io from 'socket.io-client';
 import styles from '../styles/connectfour.module.css';
 import { Square, Board, calculateWinner } from './connectfour';
@@ -79,10 +80,7 @@ export default function ConnectFourInteractive() {
   }
 
   const createGame = () => {
-    let gen_code = 0;
-    for (let i = 0; i < 4; i++) {
-      gen_code = (gen_code * 10) + Math.floor(Math.random() * 10);
-    }
+    let gen_code = Math.floor(Math.random() * 9000 + 1000);
     setCode(gen_code);
     setStep('waiting');
     socket.emit('game', gen_code.toString());
@@ -215,8 +213,9 @@ export default function ConnectFourInteractive() {
 
 	return (
 		<div>
-      <div className="stars"></div>
-      <div className="twinkling"></div>
+      <Head>
+        <title>Connect Four</title>
+      </Head>
       <div style={{display:'flex'}}>
         <Link href="/">
           <a className="button" onClick={() => exit()}>&larr;</a>

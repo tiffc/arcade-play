@@ -66,6 +66,7 @@
 .card:focus,
 .card:active {
   border: 2px solid #eaeaea;
+  outline: none;
 }
 
 @media (max-width: 600px) {

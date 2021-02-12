@@ -1,34 +1,44 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { CSSTransition } from 'react-transition-group'
 import styles from '../styles/home.module.css'
 
 export default function Home() {
+  const router = useRouter();
+  const [inProp, setInProp] = useState(true);
   const [index, setIndex] = useState(0);
   const titles = [<h1 className={styles.headline + ' ' + styles.typewriterA}>arcade</h1>, <h1 className={styles.headline + ' ' + styles.typewriterB}>play</h1>];
 
   useEffect(() => {
-    const id = setInterval(() => setIndex(1 - index), 3750);
-    return () => clearInterval(id);
+    setTimeout(() => setIndex(1 - index), 3750);
   }, [index]);
+
+  const exit = (path) => {
+    setInProp(false);
+    router.prefetch(path);
+    setTimeout(() => {router.push(path)}, 500);
+  }
 
   return (
     <div>
-      <div className="stars"></div>
-      <div className="twinkling"></div>
-      <div className="container">
-        {titles[index]}
-        <div className={styles.grid}>
-          <Link href="/tictactoe">
-            <a className={styles.card} style={{fontSize:'32px',fontFamily: 'Indie Flower, cursive'}}>Tic-tac-toe</a>
-          </Link>
-          <Link href="/connectfour">
-            <a className={styles.card} style={{fontSize:'32px',fontFamily: 'Rajdhani, sans-serif'}}>Connect Four</a>
-          </Link>
-          <Link href="/maze">
-            <a className={styles.card} style={{fontSize:'32px',fontFamily: 'Maven Pro, sans-serif'}}>Maze</a>
-          </Link>
+      <Head>
+        <title>Arcade Play</title>
+      </Head>
+      <CSSTransition in={inProp} appear={true} timeout={500} unmountOnExit classNames="page">
+        <div className="container">
+          {titles[index]}
+          <div className={styles.grid}>
+            <button className={styles.card} onClick={() => exit('/tictactoe')} style={{fontSize:'32px',fontFamily: 'Indie Flower, cursive'}}>Tic-tac-toe</button>
+            <button className={styles.card} onClick={() => exit('/connectfour')} style={{fontSize:'32px',fontFamily: 'Rajdhani, sans-serif'}}>Connect Four</button>
+            <button className={styles.card} onClick={() => exit('/maze')} style={{fontSize:'32px',fontFamily: 'Maven Pro, sans-serif'}}>Maze</button>
+          </div>
         </div>
-      </div>
+      </CSSTransition>
+      <CSSTransition in={inProp} appear={true} timeout={500} unmountOnExit classNames="panel-transition">
+        <div className="panel"/>
+      </CSSTransition>
     </div>
   )
 }

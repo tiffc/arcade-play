@@ -1,5 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
+import Head from 'next/head'
+import { CSSTransition } from 'react-transition-group'
 import styles from '../styles/maze.module.css'
 
 function Square(props) {
@@ -79,6 +81,12 @@ class MazeGame extends React.Component {
       currY: null,
       history: []
     };
+  }
+
+  componentDidMount() {
+    this.setState({
+      inProp: true
+    });
   }
 
   selectSize(size) {
@@ -242,7 +250,8 @@ class MazeGame extends React.Component {
   }
 
 	render() {
-		let display, top;
+		let display;
+		let modeButtonStyle = {display:'none'};
 		if (this.state.size) {
 			let status = <button className="button" onClick={() => this.start()}>Start</button>;
 			if (this.state.currX === this.state.endX && this.state.currY === this.state.endY) {
@@ -258,14 +267,8 @@ class MazeGame extends React.Component {
 			} else if (this.state.currX != null && this.state.currY != null) {
 				status = <button className="button" onClick={() => this.restart()}>Start over</button>;
 			}
-			top = (
-	    	<div style={{'display':'flex'}}>
-		    	<Link href="/">
-		    		<a className="button">&larr;</a>
-		      </Link>
-	  			<button className="button" style={{marginLeft:'auto'}} onClick={() => this.changeSize()}>Change mode</button>
-	  		</div>
-  		);
+			
+			modeButtonStyle = {display:'inline', marginLeft:'auto'};
 
   		display = (
 	    	<div tabIndex="0" ref={this.ref} onKeyDown={(event) => this.handleKey(event)} className={styles.game}>
@@ -281,14 +284,6 @@ class MazeGame extends React.Component {
 	      </div>
 	    );
 		} else {
-			top = (
-				<div style={{display:'flex'}}>
-		    	<Link href="/">
-		    		<a className="button">&larr;</a>
-		      </Link>
-		    </div>
-  		);
-
 			display = (
 				<div className="mode">
 					<h3>Game Mode</h3>
@@ -304,13 +299,26 @@ class MazeGame extends React.Component {
 		}
 		return (
 			<div>
-        <div className="stars"></div>
-        <div className="twinkling"></div>
-	    	{top}
-        <div className="container">
-          <h1 style={{fontSize:'48px',fontFamily:'Maven Pro, sans-serif'}}>Maze</h1>
-          {display}
-        </div>
+				<Head>
+	        <title>Maze</title>
+	      </Head>
+	      <CSSTransition in={this.state.inProp} timeout={500} classNames="page">
+	      	<div>
+			    	<div style={{'display':'flex'}}>
+				    	<Link href="/">
+				    		<a className="button">&larr;</a>
+				      </Link>
+			  			<button className="button" style={modeButtonStyle} onClick={() => this.changeSize()}>Change mode</button>
+			  		</div>
+		        <div className="container">
+		          <h1 style={{fontSize:'48px',fontFamily:'Maven Pro, sans-serif'}}>Maze</h1>
+		          {display}
+		        </div>
+		      </div>
+		     </CSSTransition>
+        <CSSTransition in={this.state.inProp} timeout={500} classNames="panel-transition">
+          <div className="panel"/>
+        </CSSTransition>
       </div>
 		);
 	}

@@ -74,6 +74,7 @@ a {
 .mode {
   background: rgb(255, 255, 255, 0.1);
   min-width: 25vw;
+  min-height: 35vh;
   margin: 1rem;
   flex-basis: 45%;
   padding: 1.5rem;
@@ -121,4 +122,77 @@ input:focus,
 input:active {
   border: 2px solid white;
   outline: none;
+}
+
+.fadeOutUpElement {
+  animation: fadeOutUp 1s ease-in 1 normal both ;
+}
+
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+.panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: rgb(255, 255, 255, 0.1);
+  width: 100vw;
+  z-index: 999;
+}
+
+.panel-transition-appear {
+  height: 100vh;
+}
+.panel-transition-appear-active {
+  height: 0;
+  transition: height 0.5s;
+}
+
+.panel-transition-enter {
+  height: 100vh;
+}
+.panel-transition-enter-active {
+  height: 0;
+  transition: height 0.5s;
+}
+
+.panel-transition-exit {
+  height: 0;
+}
+.panel-transition-exit-active {
+  height: 100vh;
+  transition: height 0.5s;
+}
+
+.page-appear {
+  opacity: 0;
+}
+.page-appear-active {
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+.page-enter {
+  opacity: 0;
+}
+.page-enter-active {
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+.page-exit {
+  opacity: 1;
+}
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 0.5s;
 }
