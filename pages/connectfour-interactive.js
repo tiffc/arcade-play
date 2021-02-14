@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import { useRouter } from 'next/router'
+import { CSSTransition } from 'react-transition-group'
 import io from 'socket.io-client';
 import styles from '../styles/connectfour.module.css';
 import { Square, Board, calculateWinner } from './connectfour';
@@ -10,32 +12,50 @@ const socket = io();
 
 export default function ConnectFourInteractive() {
 
+  const router = useRouter();
+  const [inProp, setInProp] = useState(true);
+  const [name, setName] = useState('');
+  const [opponentName, setOpponentName] = useState('');
 	const [columns, setColumns] = useState([Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null)]);
 	const [moves, setMoves] = useState(0);
 	const [next, setNext] = useState('red');
 	const [player, setPlayer] = useState('');
 	const [code, setCode] = useState('');
-	const [step, setStep] = useState('');
-	const [display, setDisplay] = useState();
+	const [step, setStep] = useState('name');
 
 	useEffect(() => {
-		socket.on('start', (player) => {
-			setPlayer(player === 0 ? 'red' : 'yellow');
+    socket.on('full', () => {
+      console.log('full');
+      setCode('');
+      setStep('full');
+    });
+		socket.on('start', (number, opponent) => {
+			setPlayer(number === 0 ? 'red' : 'yellow');
+      setOpponentName(opponent);      
 		});
-		socket.on('move', (i) => {
+		socket.on('opponentmove', (i) => {
 			opponentMove(i);
 		});
-		socket.on('replay', () => {
+		socket.on('startreplay', () => {
 			setColumns([Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null)]);
 			setMoves(0);
 			setNext('red');
 			setPlayer(player == 'red' ? 'yellow' : 'red');
 		});
-		socket.on('exit', () => {
+		socket.on('opponentexit', () => {
+      setColumns([Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null)]);
+      setMoves(0);
+      setNext('red');
 			setStep('exiting');
+      setPlayer('');
 		});
-		render();
-	}, [socket, step, code, columns, player, moves, next]);
+	}, [player, step, next]);
+
+  const exit = (path) => {
+    socket.emit('exit', name, code);
+    setInProp(false);
+    setTimeout(() => {router.push(path)}, 500);
+  }
 
   const handleClick = (i) => {
     if (calculateWinner(columns) || columns[i][5] || next != player) {
@@ -53,7 +73,7 @@ export default function ConnectFourInteractive() {
     setColumns(new_columns);
     setMoves(moves+1);
     setNext(player == 'red' ? 'yellow' : 'red');
-    socket.emit('move', i);
+    socket.emit('move', name, code, i);
   }
 
   const opponentMove = (i) => {
@@ -76,139 +96,141 @@ export default function ConnectFourInteractive() {
 		setMoves(0);
 		setNext('red');
 		setPlayer(player == 'red' ? 'yellow' : 'red');
-		socket.emit('replay');
+		socket.emit('replay', code);
   }
 
   const createGame = () => {
-    let gen_code = Math.floor(Math.random() * 9000 + 1000);
+    let gen_code = Math.floor(Math.random() * 5000 + 5000);
     setCode(gen_code);
     setStep('waiting');
-    socket.emit('game', gen_code.toString());
+    socket.emit('game', name, gen_code);
   }
 
   const joinGame = () => {
     setStep('joining');
   }
 
+  const nameSubmit = (event) => {
+    if (event) {
+      event.preventDefault();
+    }
+    setStep(''); 
+  }
+
   const codeSubmit = (event) => {
   	if (event) {
   		event.preventDefault();
   	}
-    socket.emit('game', code);
+    socket.emit('game', name, code);
     setStep('waiting');
   }
 
-  const exit = () => {
-  	socket.emit('exit');
-	  socket.disconnect();
-  }
-
-	const render = () => {
-		let display;
-    if (player) {
-      const winner = calculateWinner(columns);
-      let status;
-      if (winner) {
-        const style = { 
-          background: winner,
-          height: 22,
-          width: 22,
-          borderRadius: '50%' 
-        };
-        const piece = <div style={style}></div>;
-        status = (
-          <div>
-            <div style={{display: 'flex'}}>{piece}<b>&nbsp;wins!</b></div>
-            <br/>
-            <br/>
-            <br/>
-            <button className="button" onClick={() => replay()}>Play again</button>
-          </div>
-        );
-      } else if (moves === 42) {
-        status = (
-          <div>
-            <b>Draw!</b>
-            <br/>
-            <br/>
-            <br/>
-            <button className="button" onClick={() => replay()}>Play again</button>
-          </div>
-        );
-      } else {
-        const style = { 
-          background: next,
-          height: 22,
-          width: 22,
-          borderRadius: '50%'
-        };
-        const piece = <div style={style}></div>;
-        status = <div style={{display: 'flex'}}>{piece}&nbsp;turn</div>;
-      }
-
-      const style = { 
-        background: player,
-        height: 22,
-        width: 22,
-        borderRadius: '50%'
-      };
-      const piece = <div style={style}></div>;
-      display = (
-        <div className={styles.game}>
-          <Board 
-            columns={columns}
-            onClick={(i) => handleClick(i)}
-          />
-          <div className={styles.gameinfo}>
-          	<div style={{display:'flex'}}>You are player&nbsp;{piece}</div>
-          	<br/>
-          	<br/>
-            {status}
-          </div>
+	let display;
+  if (player) {
+    const winner = calculateWinner(columns);
+    let status;
+    if (winner) {
+      status = (
+        <div>
+          <b>{winner == player ? 'You win!' : opponentName + ' wins!'}</b>
+          <br/>
+          <br/>
+          <br/>
+          <button className="button" onClick={() => replay()}>Play again</button>
         </div>
       );
-    } else if (step == 'waiting' || step == 'exiting') {
-    	let message = "Waiting for second player...";
-    	if (step == 'exiting') {
-    		message = "Player has left the game. " + message;
-    	}
-      display = (
-        <div className="mode">
-          <h3>Game code: {code}</h3>
-          <br/>
-          <p>{message}</p>
-          <br/>
-        </div>
-      );
-    } else if (step == 'joining') {
-      display = (
-        <div className="mode">
-          <form onSubmit={(event) => codeSubmit(event)}>
-            <label>
-              <h3>Enter code</h3>
-              <input value={code} onInput={(event) => setCode(event.target.value)} />
-            </label>
-          </form>
+    } else if (moves === 42) {
+      status = (
+        <div>
+          <b>Draw!</b>
           <br/>
           <br/>
-          <button className="button" onClick={() => {setStep('')}}>&larr;</button>&nbsp;
-          <button className="button" onClick={() => codeSubmit()}>Start game</button>
+          <br/>
+          <button className="button" onClick={() => replay()}>Play again</button>
         </div>
       );
     } else {
-      display = (
-        <div className="mode">
-          <h3>Interactive Game Mode</h3>
-          <br/>
-          <button className="button" onClick={() => createGame()}>Create game</button>
-          <br/>
-          <br/>
-          <button className="button" onClick={() => joinGame()}>Enter code</button>
-          <br/>
-        </div>
-      );
+      status = <div >{next == player ? 'Your' : opponentName + "'s"} turn</div>;
     }
-    setDisplay(display);
+
+    const style = { 
+      background: player,
+      height: 22,
+      width: 22,
+      borderRadius: '50%'
+    };
+    const piece = <div style={style}></div>;
+    display = (
+      <div className={styles.game}>
+        <Board 
+          columns={columns}
+          onClick={(i) => handleClick(i)}
+        />
+        <div className={styles.gameinfo}>
+        	<div style={{display:'flex'}}>You are&nbsp;{piece}</div>
+        	<br/>
+        	<br/>
+          {status}
+        </div>
+      </div>
+    );
+  } else if (step == 'name') {
+    display = (
+      <div className="mode">
+        <form onSubmit={(event) => nameSubmit(event)}>
+          <label>
+            <h3>Enter your name</h3>
+            <input value={name} onInput={(event) => setName(event.target.value)} />
+          </label>
+        </form>
+        <br/>
+        <br/>
+        <button className="button" onClick={() => nameSubmit()}>&rarr;</button>
+      </div>
+    );
+  } else if (step == 'waiting' || step == 'exiting') {
+  	let message = <p>Waiting for second player...</p>;
+    if (step == 'exiting') {
+      message = <div><p>{opponentName} has left the game. </p>{message}</div>;
+    }
+    display = (
+      <div className="mode">
+        <h3>Game code: {code}</h3>
+        <br/>
+        {message}
+        <br/>
+      </div>
+    );
+  } else if (step == 'joining' || step == 'full') {
+    let message = <br/>;
+    if (step == 'full') {
+      message = <p>Game is full. Please enter a different code.</p>
+    }
+    display = (
+      <div className="mode">
+        <form onSubmit={(event) => codeSubmit(event)}>
+          <label>
+            <h3>Enter code</h3>
+            <input value={code} onInput={(event) => setCode(parseInt(event.target.value))} />
+          </label>
+        </form>
+        {message}
+        <br/>
+        <button className="button" onClick={() => {setStep('')}}>&larr;</button>&nbsp;
+        <button className="button" onClick={() => codeSubmit()}>Start game</button>
+      </div>
+    );
+  } else {
+    display = (
+      <div className="mode">
+        <h3>Hello, {name}</h3>
+        <button className="button" onClick={() => createGame()}>Create game</button>
+        <br/>
+        <br/>
+        <button className="button" onClick={() => joinGame()}>Enter code</button>
+        <br/>
+      </div>
+    );
   }
 
 	return (
@@ -216,15 +238,20 @@ export default function ConnectFourInteractive() {
       <Head>
         <title>Connect Four</title>
       </Head>
-      <div style={{display:'flex'}}>
-        <Link href="/">
-          <a className="button" onClick={() => exit()}>&larr;</a>
-        </Link>
-      </div>
-      <div className="container">
-        <h1 style={{fontSize:'60px',fontFamily:'Rajdhani, sans-serif'}}>Connect Four</h1>
-        {display}
-      </div>
+      <CSSTransition in={inProp} enter={false} unmountOnExit timeout={500} classNames="page">
+        <div>
+          <div style={{display:'flex'}}>
+            <button className="button" onClick={() => exit('/')}>&larr;</button>
+          </div>
+          <div className="container">
+            <h1 style={{fontSize:'60px',fontFamily:'Rajdhani, sans-serif'}}>Connect Four</h1>
+            {display}
+          </div>
+        </div>
+      </CSSTransition>
+      <CSSTransition in={inProp} enter={false} unmountOnExit timeout={500} classNames="panel-transition">
+        <div className="panel"/>
+      </CSSTransition>
     </div>
 	);
 }

@@ -12,12 +12,12 @@ export default function Home() {
   const titles = [<h1 className={styles.headline + ' ' + styles.typewriterA}>arcade</h1>, <h1 className={styles.headline + ' ' + styles.typewriterB}>play</h1>];
 
   useEffect(() => {
-    setTimeout(() => setIndex(1 - index), 3750);
+    const id = setTimeout(() => setIndex(1 - index), 3750);
+    return () => clearTimeout(id);
   }, [index]);
 
   const exit = (path) => {
     setInProp(false);
-    router.prefetch(path);
     setTimeout(() => {router.push(path)}, 500);
   }
 
@@ -26,17 +26,17 @@ export default function Home() {
       <Head>
         <title>Arcade Play</title>
       </Head>
-      <CSSTransition in={inProp} appear={true} timeout={500} unmountOnExit classNames="page">
+      <CSSTransition in={inProp} appear={true} timeout={500} classNames="page">
         <div className="container">
           {titles[index]}
           <div className={styles.grid}>
             <button className={styles.card} onClick={() => exit('/tictactoe')} style={{fontSize:'32px',fontFamily: 'Indie Flower, cursive'}}>Tic-tac-toe</button>
             <button className={styles.card} onClick={() => exit('/connectfour')} style={{fontSize:'32px',fontFamily: 'Rajdhani, sans-serif'}}>Connect Four</button>
-            <button className={styles.card} onClick={() => exit('/maze')} style={{fontSize:'32px',fontFamily: 'Maven Pro, sans-serif'}}>Maze</button>
+            <button className={styles.card} onClick={() => exit('/maze')} style={{fontSize:'32px',fontFamily: 'Josefin Slab, serif'}}>Maze</button>
           </div>
         </div>
       </CSSTransition>
-      <CSSTransition in={inProp} appear={true} timeout={500} unmountOnExit classNames="panel-transition">
+      <CSSTransition in={inProp} appear={true} timeout={500} classNames="panel-transition">
         <div className="panel"/>
       </CSSTransition>
     </div>

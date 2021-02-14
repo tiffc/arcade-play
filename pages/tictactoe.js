@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { CSSTransition } from 'react-transition-group'
 import styles from '../styles/tictactoe.module.css'
 
@@ -58,21 +58,8 @@ export default function TicTacToe() {
   const [moves, setMoves] = useState(0);
   const [next, setNext] = useState('X');
   const [player, setPlayer] = useState('X');
-  const [display, setDisplay] = useState((
-    <div className="mode">
-      <h3>Game Mode</h3>
-      <button className="button" onClick={() => selectMode('singleplayer')}>Single player</button>
-      &nbsp;&nbsp;
-      <button className="button" onClick={() => selectMode('twoplayer')}>Two player</button>
-      <br/>
-      <br/>
-      <Link href="/tictactoe-interactive">
-        <a className="button">Invite or join a friend</a>
-      </Link>
-      <br/>
-    </div>
-  ));
-  const [modeButtonStyle, setModeButtonStyle] = useState({display:'none'});
+  const [display, setDisplay] = useState();
+  const [modeButtonStyle, setModeButtonStyle] = useState();
 
   useEffect(() => {
     render();
@@ -80,7 +67,6 @@ export default function TicTacToe() {
 
   const exit = (path) => {
     setInProp(false);
-    router.prefetch(path);
     setTimeout(() => {router.push(path)}, 500);
   }
 
@@ -102,7 +88,7 @@ export default function TicTacToe() {
     }
     const new_squares = squares.slice();
     new_squares[i] = player;
-    if (mode == 'singleplayer' && !calculateWinner(new_squares) && moves < 9) {
+    if (mode == 'singleplayer' && !calculateWinner(new_squares) && moves < 8) {
       new_squares[opponentMove(new_squares)] = player == 'X' ? 'O' : 'X';
       setMoves(moves+2);
     } else {
@@ -199,7 +185,7 @@ export default function TicTacToe() {
       <Head>
         <title>Tic-Tac-Toe</title>
       </Head>
-      <CSSTransition in={inProp} appear={true} unmountOnExit timeout={500} classNames="page">
+      <CSSTransition in={inProp} appear={true} timeout={500} classNames="page">
         <div>
           <div style={{display:'flex'}}>
             <button className="button" onClick={() => exit('/')}>&larr;</button>
@@ -211,7 +197,7 @@ export default function TicTacToe() {
           </div>
         </div>
       </CSSTransition>
-      <CSSTransition in={inProp} appear={true} unmountOnExit timeout={500} classNames="panel-transition">
+      <CSSTransition in={inProp} appear={true} timeout={500} classNames="panel-transition">
         <div className="panel"/>
       </CSSTransition>
     </div>

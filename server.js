@@ -9,68 +9,77 @@ const nextHandler = nextApp.getRequestHandler();
 
 const port = process.env.PORT || 3000;
 
-const players = new Map();
-const rooms = new Map();
+const games = new Map();
 
 io.on('connect', socket => {
 
-  function updatePlayers(id, code) {
-    players.set(id, code);
-    if (rooms.has(code) && rooms.get(code).length < 2) {
-      rooms.get(code).push(id);
-      console.log('Player ' + id + ' has joined game ' + code);
-      console.log('Game ' + code + ' currently has players: ' + rooms.get(code));
-      if (rooms.get(code).length === 2) {
-        io.to(rooms.get(code)[0]).emit('start', 0);
-        io.to(rooms.get(code)[1]).emit('start', 1);
-        console.log('Player ' + rooms.get(code)[0] + ' is 1 and player ' + rooms.get(code)[1] + ' is 2')
+  function updatePlayers(name, code) {
+    if (games.has(code)) {
+      if (games.get(code).length < 2) {
+        games.get(code).push(name);
+        console.log(name + ' has joined game ' + code);
+        console.log('Game ' + code + ' currently has players: ' + games.get(code));
+      } else {
+        console.log(name + ' attempted to join game ' + code + ' but it is full')
+        return false;
       }
     } else {
-      rooms.set(code, [id]);
-      console.log('Player ' + id + ' has created a new game: ' + code);
-      console.log('Game ' + code + ' currently has players: ' + rooms.get(code));
+      games.set(code, [name]);
+      console.log(name + ' has created a new game: ' + code);
+      console.log('Game ' + code + ' currently has players: ' + games.get(code));
     }
+    return true;
   }
 
-  function removePlayers(id) {
-    let code = players.get(id);
-    if (rooms.get(code)) {
-      rooms.get(code).splice(rooms.get(code).indexOf(id), 1);
-      console.log('Player ' + id + ' has left game ' + code);
-      console.log('Game ' + code + ' currently has players: ' + rooms.get(code));
-      if (!rooms.get(code).length) {
-        rooms.delete(code);
+  function removePlayers(name, code) {
+    if (games.has(code)) {
+      games.get(code).splice(games.get(code).indexOf(name), 1);
+      console.log('Removed ' + name + ' from game ' + code);
+      console.log('Game ' + code + ' currently has players: ' + games.get(code));
+      if (!games.get(code).length) {
+        games.delete(code);
         console.log('Game ' + code + ' is empty and has been deleted');
       }
     }
-    players.delete(id);
   }
 
-  socket.on('game', (code) => {
-    socket.join(code);
-    updatePlayers(socket.id, code);
+  socket.on('game', (name, code) => {
+    if (updatePlayers(name, code)) {
+      socket.join(code);
+      if (games.get(code).length === 2) {
+        socket.to(code).emit('start', 0, games.get(code)[1]);
+        socket.emit('start', 1, games.get(code)[0]);
+        console.log(games.get(code)[0] + ' is player 1 and ' + games.get(code)[1] + ' is player 2')
+      }
+    } else {
+      socket.emit('full');
+    }
   });
 
-  socket.on('move', (i) => {
-    socket.to(players.get(socket.id)).emit('move', i);
-    console.log('Player ' + socket.id + ' has played move ' + i);
+  socket.on('move', (name, code, i) => {
+    socket.to(code).emit('opponentmove', i);
+    console.log(name + ' has played move ' + i);
   });
 
-  socket.on('replay', () => {
-    socket.to(players.get(socket.id)).emit('replay');
+  socket.on('replay', (code) => {
+    socket.to(code).emit('startreplay');
     console.log('Replaying game');
-  })
-
-  socket.on('exit', () => {
-    socket.to(players.get(socket.id)).emit('exit');
-    removePlayers(socket.id);
-    socket.disconnect(true);
   });
 
-  socket.on('disconnect', () => {
-    removePlayers(socket.id);
-    socket.disconnect(true);
+  socket.on('exit', (name, code) => {
+    removePlayers(name, code);
+    socket.to(code).emit('opponentexit');
+    socket.leave(code);
+    console.log(name + ' has left game ' + code);
   });
+  
+  // socket.on('disconnect', () => {
+  //   for (let code of socket.rooms) {
+  //     socket.to(code).emit('exit');
+  //     games.delete(code);
+  //     updatePlayers
+  //   socket.disconnect(true);
+  // });
 });
 
 nextApp.prepare().then(() => {

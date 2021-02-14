@@ -13,39 +13,47 @@ export default function TicTacToeInteractive() {
 
 	const router = useRouter();
 	const [inProp, setInProp] = useState(true);
+	const [name, setName] = useState('');
+	const [opponentName, setOpponentName] = useState('');
 	const [squares, setSquares] = useState(Array(9).fill(null));
 	const [moves, setMoves] = useState(0);
 	const [next, setNext] = useState('X');
 	const [player, setPlayer] = useState('');
 	const [code, setCode] = useState('');
-	const [step, setStep] = useState('');
-	const [display, setDisplay] = useState();
+	const [step, setStep] = useState('name');
 
 	useEffect(() => {
-		socket.on('start', (player) => {
-			setPlayer(player == 0 ? 'X' : 'O');
+		socket.on('full', () => {
+			console.log('full');
+			setCode('');
+			setStep('full');
 		});
-		socket.on('move', (i) => {
+		socket.on('start', (number, opponent) => {
+			setPlayer(number === 0 ? 'X' : 'O');
+			setOpponentName(opponent);
+		});
+		socket.on('opponentmove', (i) => {
 			opponentMove(i);
 		});
-		socket.on('replay', () => {
+		socket.on('startreplay', () => {
 			setSquares(Array(9).fill(null));
 			setMoves(0);
 			setNext('X');
 			setPlayer(player == 'X' ? 'O' : 'X');
 		});
-		socket.on('exit', () => {
+		socket.on('opponentexit', () => {
+			setSquares(Array(9).fill(null));
+			setMoves(0);
+			setNext('X');
 			setStep('exiting');
+			setPlayer('');
 		});
-		render();
-	}, [socket, step, code, squares, player, moves, next]);
+	}, [player, step, next]);
 
 	const exit = (path) => {
+		socket.emit('exit', name, code);
     setInProp(false);
-    router.prefetch(path);
     setTimeout(() => {router.push(path)}, 500);
-    socket.emit('exit');
-	  socket.disconnect();
   }
 
   const handleClick = (i) => {
@@ -57,7 +65,7 @@ export default function TicTacToeInteractive() {
     setSquares(new_squares);
     setMoves(moves+1);
     setNext(player == 'X' ? 'O' : 'X');
-    socket.emit('move', i);
+    socket.emit('move', name, code, i);
   }
 
   const opponentMove = (i) => {
@@ -73,112 +81,134 @@ export default function TicTacToeInteractive() {
 		setMoves(0);
 		setNext('X');
 		setPlayer(player == 'X' ? 'O' : 'X');
-		socket.emit('replay');
+		socket.emit('replay', code);
   }
 
   const createGame = () => {
-    const gen_code = Math.floor(Math.random() * 9000 + 1000);
+    const gen_code = Math.floor(Math.random() * 4000 + 1000);
     setCode(gen_code);
     setStep('waiting');
-    socket.emit('game', gen_code.toString());
+    socket.emit('game', name, gen_code);
   }
 
   const joinGame = () => {
     setStep('joining');
   }
 
+  const nameSubmit = (event) => {
+  	if (event) {
+  		event.preventDefault();
+  	}
+    setStep(''); 
+  }
+
   const codeSubmit = (event) => {
   	if (event) {
   		event.preventDefault();
   	}
-    socket.emit('game', code);
+    socket.emit('game', name, code);
     setStep('waiting');
   }
 
-	const render = () => {
-		let display;
-    if (player) {
-      const winner = calculateWinner(squares);
-      let status;
-      if (winner) {
-        status = (
-          <div>
-            <b><span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{winner}</b></span> wins!</b>
-            <br/>
-            <br/>
-            <br/>
-            <button className="button" onClick={() => replay()}>Play again</button>
-          </div>
-        );
-      } else if (moves === 9) {
-        status = (
-          <div>
-            <b>Draw!</b>
-            <br/>
-            <br/>
-            <br/>
-            <button className="button" onClick={() => replay()}>Play again</button>
-          </div>
-        );
-      } else {
-        status = <div><span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{next}</b></span> turn</div>;
-      }
-
-      display = (
-        <div className={styles.game}>
-          <Board 
-            squares={squares}
-            onClick={(i) => handleClick(i)}
-          />
-          <div className={styles.gameinfo}>
-          	You are player <span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{player}</b></span>
-          	<br/>
-          	<br/>
-            {status}
-          </div>
+	let display;
+  if (player) {
+    const winner = calculateWinner(squares);
+    let status;
+    if (winner) {
+      status = (
+        <div>
+          <b>{winner == player ? 'You win!' : opponentName + ' wins!'}</b>
+          <br/>
+          <br/>
+          <br/>
+          <button className="button" onClick={() => replay()}>Play again</button>
         </div>
       );
-    } else if (step == 'waiting' || step == 'exiting') {
-    	let message = "Waiting for second player...";
-    	if (step == 'exiting') {
-    		message = "Player has left the game. " + message;
-    	}
-      display = (
-        <div className="mode">
-          <h3>Game code: {code}</h3>
-          <br/>
-          <p>{message}</p>
-          <br/>
-        </div>
-      );
-    } else if (step == 'joining') {
-      display = (
-        <div className="mode">
-          <form onSubmit={(event) => codeSubmit(event)}>
-            <label>
-              <h3>Enter code</h3>
-              <input value={code} onInput={(event) => setCode(event.target.value)} />
-            </label>
-          </form>
+    } else if (moves === 9) {
+      status = (
+        <div>
+          <b>Draw!</b>
           <br/>
           <br/>
-          <button className="button" onClick={() => {setStep('')}}>&larr;</button>&nbsp;
-          <button className="button" onClick={() => codeSubmit()}>Start game</button>
+          <br/>
+          <button className="button" onClick={() => replay()}>Play again</button>
         </div>
       );
     } else {
-      display = (
-        <div className="mode">
-          <h3>Interactive Game Mode</h3>
-          <button className="button" onClick={() => createGame()}>Create game</button>
-          <br/>
-          <br/>
-          <button className="button" onClick={() => joinGame()}>Enter code</button>
-          <br/>
-        </div>
-      );
+      status = <div>{next == player ? 'Your' : opponentName + "'s"} turn</div>;
     }
-    setDisplay(display);
+
+    display = (
+      <div className={styles.game}>
+        <Board 
+          squares={squares}
+          onClick={(i) => handleClick(i)}
+        />
+        <div className={styles.gameinfo}>
+        	You are <span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{player}</b></span>
+        	<br/>
+        	<br/>
+          {status}
+        </div>
+      </div>
+    );
+  } else if (step == 'name') {
+  	display = (
+      <div className="mode">
+        <form onSubmit={(event) => nameSubmit(event)}>
+          <label>
+            <h3>Enter your name</h3>
+            <input value={name} onInput={(event) => setName(event.target.value)} />
+          </label>
+        </form>
+        <br/>
+        <br/>
+        <button className="button" onClick={() => nameSubmit()}>&rarr;</button>
+      </div>
+    );
+  } else if (step == 'waiting' || step == 'exiting') {
+  	let message = <p>Waiting for second player...</p>;
+  	if (step == 'exiting') {
+  		message = <div><p>{opponentName} has left the game. </p>{message}</div>;
+  	}
+    display = (
+      <div className="mode">
+        <h3>Game code: {code}</h3>
+        <br/>
+        {message}
+        <br/>
+      </div>
+    );
+  } else if (step == 'joining' || step == 'full') {
+  	let message = <br/>;
+  	if (step == 'full') {
+  		message = <p>Game is full. Please enter a different code.</p>
+  	}
+    display = (
+      <div className="mode">
+        <form onSubmit={(event) => codeSubmit(event)}>
+          <label>
+            <h3>Enter code</h3>
+            <input value={code} onInput={(event) => setCode(parseInt(event.target.value))} />
+          </label>
+        </form>
+        {message}
+        <br/>
+        <button className="button" onClick={() => {setStep('')}}>&larr;</button>&nbsp;
+        <button className="button" onClick={() => codeSubmit()}>Start game</button>
+      </div>
+    );
+  } else {
+    display = (
+      <div className="mode">
+        <h3>Hello, {name}</h3>
+        <button className="button" onClick={() => createGame()}>Create game</button>
+        <br/>
+        <br/>
+        <button className="button" onClick={() => joinGame()}>Enter code</button>
+        <br/>
+      </div>
+    );
   }
 
 	return (
@@ -186,7 +216,7 @@ export default function TicTacToeInteractive() {
 			<Head>
         <title>Tic-Tac-Toe</title>
       </Head>
-      <CSSTransition in={inProp} enter={false} unmountOnExit timeout={500} classNames="page">
+      <CSSTransition in={inProp} enter={false} timeout={500} classNames="page">
         <div>
 		      <div style={{display:'flex'}}>
 		        <button className="button" onClick={() => exit('/')}>&larr;</button>
@@ -197,7 +227,7 @@ export default function TicTacToeInteractive() {
 		      </div>
 		    </div>
 		  </CSSTransition>
-      <CSSTransition in={inProp} enter={false} unmountOnExit timeout={500} classNames="panel-transition">
+      <CSSTransition in={inProp} enter={false} timeout={500} classNames="panel-transition">
         <div className="panel"/>
       </CSSTransition>
     </div>

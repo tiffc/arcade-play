@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Maven+Pro&family=Rajdhani&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Maven+Pro&family=Rajdhani&family=Josefin+Slab&display=swap');
 
 html,
 body {
@@ -60,13 +60,13 @@ a {
 }
 
 .stars {
-  background:#000 url(http://www.script-tutorials.com/demos/360/images/stars.png) repeat top center;
+  background:#000 url(https://www.script-tutorials.com/demos/360/images/stars.png) repeat top center;
   z-index:-2;
   animation:risingStars 400s linear infinite;
 }
 
 .twinkling {
-  background:transparent url(http://www.script-tutorials.com/demos/360/images/twinkling.png) repeat top center;
+  background:transparent url(https://www.script-tutorials.com/demos/360/images/twinkling.png) repeat top center;
   z-index:-1;
   animation:twinkleEffect 200s linear infinite;
 }

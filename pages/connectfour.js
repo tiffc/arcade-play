@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { CSSTransition } from 'react-transition-group'
 import styles from '../styles/connectfour.module.css'
 
-function Square(props) {
+export function Square(props) {
 	const style = { background: props.color };
 	const piece = <div className={styles.piece} style={style}></div>;
   return (
@@ -14,7 +15,7 @@ function Square(props) {
   );
 }
 
-class Board extends React.Component {
+export class Board extends React.Component {
   renderSquare(i, j) {
   	const color = (this.props.columns[j][i] ? this.props.columns[j][i] : 'rgb(255, 255, 255, 0.5)');
     return (
@@ -51,99 +52,91 @@ class Board extends React.Component {
   }
 }
 
-class ConnectFour extends React.Component {
-  constructor(props) {
-    super(props);
-    const columns = [];
-    for (let j = 0; j < 7; j++) {
-    	columns.push(Array(6).fill(null));
-    }
-    this.state = {
-    	mode: null,
-    	player: 'red',
-      columns: columns,
-      moves: 0
-    };
-  }
+export default function ConnectFour() {
 
-  componentDidMount() {
-    this.setState({
-      inProp: true
-    });
+	const router = useRouter();
+	const [inProp, setInProp] = useState(true);
+	const [columns, setColumns] = useState([Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null)]);
+	const [mode, setMode] = useState();
+	const [moves, setMoves] = useState(0);
+	const [next, setNext] = useState('red');
+	const [player, setPlayer] = useState('red');
+	const [display, setDisplay] = useState();
+	const [modeButtonStyle, setModeButtonStyle] = useState();
+  
+  useEffect(() => {
+    render();
+  }, [columns, mode, player, moves, next]);
+
+  const exit = (path) => {
+    setInProp(false);
+    setTimeout(() => {router.push(path)}, 500);
   }
   
-  selectMode(mode) {
-  	this.setState({
-  		mode: mode
-  	});
+  const selectMode = (mode) => {
+  	setMode(mode);
   }
 
-  changeMode(mode) {
-  	const columns = [];
-    for (let j = 0; j < 7; j++) {
-    	columns.push(Array(6).fill(null));
-    }
-  	this.setState({
-  		mode: null,
-  		columns: columns,
-  		moves: 0
-  	});
+  const changeMode = (mode) => {
+  	setMode();
+    setNext('red');
+    setPlayer('red');
+    setColumns([Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null)]);
+    setMoves(0);
   }
 
-  handleClick(j) {
-  	const columns = [];
-  	for (let k = 0; k < 7; k++) {
-    	columns.push(this.state.columns[k].slice());
-    }
-    if (calculateWinner(columns) || columns[j][5]) {
+  const handleClick = (i) => {
+    if (calculateWinner(columns) || columns[i][5] || next != player) {
       return;
     }
-    let i = 0;
-    while (columns[j][i]) {
-    	i++;
+    const new_columns = [];
+    for (let k = 0; k < 7; k++) {
+      new_columns.push(columns[k].slice());
     }
-    columns[j][i] = (this.state.moves % 2 === 0) ? 'red' : 'yellow';
-    let moves = this.state.moves+1;
-    if (this.state.mode === 'singleplayer' && !calculateWinner(columns) && moves < 42) {
-    	const column = opponentMove(columns, moves);
-    	let i = 0;
-    	while (columns[column][i]) {
-	    	i++;
+    let j = 0;
+    while (new_columns[i][j]) {
+      j++;
+    }
+    new_columns[i][j] = player;
+    if (mode == 'singleplayer' && !calculateWinner(new_columns) && moves < 41) {
+    	let c = opponentMove(new_columns, moves);
+    	j = 0;
+	    while (new_columns[c][j]) {
+	      j++;
 	    }
-    	columns[column][i] = (moves % 2 === 0) ? 'red' : 'yellow';
-    	moves++;
+      new_columns[c][j] = player == 'red' ? 'yellow' : 'red';
+      setMoves(moves+2);
+    } else {
+      setMoves(moves+1);
+      setNext(next == 'red' ? 'yellow' : 'red');
     }
-    this.setState({
-      columns: columns,
-      moves: moves
-    });
+    if (mode == 'twoplayer') {
+      setPlayer(player == 'red' ? 'yellow' : 'red');
+    }
+    setColumns(new_columns);
   }
 
-  replay() {
-  	let player = 'red';
-  	const columns = [];
-  	let moves = 0;
-    for (let j = 0; j < 7; j++) {
-    	columns.push(Array(6).fill(null));
+  const replay = () => {
+  	const new_columns = [Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null),Array(6).fill(null)];
+    setMoves(0);
+    if (mode == 'singleplayer' && player == 'red') {
+      new_columns[opponentMove(new_columns, moves)][0] = 'red';
+      setMoves(1);
+      setNext('yellow');
+      setPlayer('yellow');
+    } else {
+      setMoves(0);
+      setNext('red');
+      setPlayer('red');
     }
-    if (this.state.mode === 'singleplayer' && calculateWinner(this.state.columns) === this.state.player) {
-  		columns[3][0] = 'red';
-  		moves++;
-  		player = 'yellow';
-  	}
-  	this.setState({
-  		player: player,
-  		columns: columns,
-  		moves: moves
-  	});
+    setColumns(new_columns);
   }
 
-  render() {
+  const render = () => {
   	let display;
   	let modeButtonStyle = {display:'none'};
-  	if (this.state.mode) {
-	    const winner = calculateWinner(this.state.columns);
-
+  	if (mode) {
+	    const winner = calculateWinner(columns);
 	    let status;
 	    if (winner) {
 	    	const style = { 
@@ -159,22 +152,22 @@ class ConnectFour extends React.Component {
 	      		<br/>
 	      		<br/>
 	      		<br/>
-	      		<button className="button" onClick={() => this.replay()}>Play again</button>
+	      		<button className="button" onClick={() => replay()}>Play again</button>
 	      	</div>
 	      );
-	    } else if (this.state.moves === 42) {
+	    } else if (moves === 42) {
 	    	status = (
 	      	<div>
 	      		<b>Draw!</b>
 	      		<br/>
 	      		<br/>
 	      		<br/>
-	      		<button className="button" onClick={() => this.replay()}>Play again</button>
+	      		<button className="button" onClick={() => replay()}>Play again</button>
 	      	</div>
 	      );
 	    } else {
 	    	const style = { 
-					background: (this.state.moves % 2 === 0) ? 'red' : 'yellow',
+					background: (moves % 2 === 0) ? 'red' : 'yellow',
 					height: 22,
 					width: 22,
 					borderRadius: '50%'
@@ -188,8 +181,8 @@ class ConnectFour extends React.Component {
 	    display = (
 	    	<div className={styles.game}>
           <Board 
-            columns={this.state.columns}
-            onClick={(j) => this.handleClick(j)}
+            columns={columns}
+            onClick={(i) => handleClick(i)}
           />
 	        <div className={styles.gameinfo}>
 	          {status}
@@ -200,10 +193,9 @@ class ConnectFour extends React.Component {
 			display = (
 				<div className="mode">
 					<h3>Game Mode</h3>
-					<button className="button" onClick={() => this.selectMode('singleplayer')}>Single player</button>
-					<br/>
-					<br/>
-					<button className="button" onClick={() => this.selectMode('twoplayer')}>Two player</button>
+					<button className="button" onClick={() => selectMode('singleplayer')}>Single player</button>
+					&nbsp;&nbsp;
+					<button className="button" onClick={() => selectMode('twoplayer')}>Two player</button>
 					<br/>
 					<br/>
 					<Link href="/connectfour-interactive">
@@ -213,40 +205,37 @@ class ConnectFour extends React.Component {
 				</div>
 			);
 	  }
-
-    return (
-    	<div>
-	    	<Head>
-	        <title>Connect Four</title>
-	      </Head>
-	      <CSSTransition in={this.state.inProp} timeout={500} classNames="page">
-	      	<div>
-			  		<div style={{'display':'flex'}}>
-				    	<Link href="/">
-				    		<a className="button">&larr;</a>
-				      </Link>
-			  			<button className="button" style={modeButtonStyle} onClick={() => this.changeMode()}>Change mode</button>
-			  		</div>
-			    	<div className="container">
-			    		<h1 style={{fontSize:'60px',fontFamily: 'Rajdhani, sans-serif'}}>Connect Four</h1>
-			    		{display}
-						</div>
-					</div>
-				</CSSTransition>
-				<CSSTransition in={this.state.inProp} timeout={500} classNames="panel-transition">
-          <div className="panel"/>
-        </CSSTransition>
-			</div>
-    );
+	  setDisplay(display);
+    setModeButtonStyle(modeButtonStyle);
   }
-}
 
-export {Square, Board, calculateWinner}
-export default ConnectFour
+  return (
+  	<div>
+    	<Head>
+        <title>Connect Four</title>
+      </Head>
+      <CSSTransition in={inProp} appear={true} unmountOnExit timeout={500} classNames="page">
+      	<div>
+		  		<div style={{'display':'flex'}}>
+			    	<button className="button" onClick={() => exit('/')}>&larr;</button>
+			      <button className="button" style={modeButtonStyle} onClick={() => changeMode()}>Change mode</button>
+		  		</div>
+		    	<div className="container">
+		    		<h1 style={{fontSize:'60px',fontFamily: 'Rajdhani, sans-serif'}}>Connect Four</h1>
+		    		{display}
+					</div>
+				</div>
+			</CSSTransition>
+			<CSSTransition in={inProp} appear={true} unmountOnExit timeout={500} classNames="panel-transition">
+        <div className="panel"/>
+      </CSSTransition>
+		</div>
+  );
+}
 
 // ========================================
 
-function calculateWinner(columns) {
+export function calculateWinner(columns) {
 	for (let j = 0; j < 7; j++) {
 		for (let i = 0; i < 3; i++) {
 			if (columns[j][i] && columns[j][i] === columns[j][i+1] && columns[j][i] === columns[j][i+2] &&
