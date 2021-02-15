@@ -18,6 +18,7 @@ export default function Home() {
 
   const exit = (path) => {
     setInProp(false);
+    router.prefetch(path);
     setTimeout(() => {router.push(path)}, 500);
   }
 
