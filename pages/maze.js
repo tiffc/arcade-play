@@ -82,6 +82,7 @@ export default function MazeGame() {
 
 	const exit = (path) => {
     setInProp(false);
+    router.prefetch(path);
     setTimeout(() => {router.push(path)}, 500);
   }
 

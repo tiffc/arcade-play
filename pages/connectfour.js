@@ -70,6 +70,7 @@ export default function ConnectFour() {
 
   const exit = (path) => {
     setInProp(false);
+    router.prefetch(path);
     setTimeout(() => {router.push(path)}, 500);
   }
   

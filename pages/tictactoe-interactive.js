@@ -53,6 +53,7 @@ export default function TicTacToeInteractive() {
 	const exit = (path) => {
 		socket.emit('exit', name, code);
     setInProp(false);
+    router.prefetch(path);
     setTimeout(() => {router.push(path)}, 500);
   }
 
