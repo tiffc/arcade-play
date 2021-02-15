@@ -26,7 +26,7 @@ export default function Home() {
       <Head>
         <title>Arcade Play</title>
       </Head>
-      <CSSTransition in={inProp} appear={true} timeout={500} classNames="page">
+      <CSSTransition in={inProp} appear={true} unmountOnExit timeout={500} classNames="page">
         <div className="container">
           {titles[index]}
           <div className={styles.grid}>
@@ -36,7 +36,7 @@ export default function Home() {
           </div>
         </div>
       </CSSTransition>
-      <CSSTransition in={inProp} appear={true} timeout={500} classNames="panel-transition">
+      <CSSTransition in={inProp} appear={true} unmountOnExit timeout={500} classNames="panel-transition">
         <div className="panel"/>
       </CSSTransition>
     </div>

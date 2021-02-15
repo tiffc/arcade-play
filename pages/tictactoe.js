@@ -58,12 +58,6 @@ export default function TicTacToe() {
   const [moves, setMoves] = useState(0);
   const [next, setNext] = useState('X');
   const [player, setPlayer] = useState('X');
-  const [display, setDisplay] = useState();
-  const [modeButtonStyle, setModeButtonStyle] = useState();
-
-  useEffect(() => {
-    render();
-  }, [squares, mode, player, moves, next]);
 
   const exit = (path) => {
     setInProp(false);
@@ -117,67 +111,63 @@ export default function TicTacToe() {
     setSquares(new_squares);
   }
 
-  const render = () => {
-    let display;
-    let modeButtonStyle = {display:'none'};
-    if (mode) {
-      const winner = calculateWinner(squares);
-      let status;
-      if (winner) {
-        status = (
-          <div>
-            <b><span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{winner}</b></span> wins!</b>
-            <br/>
-            <br/>
-            <br/>
-            <button className="button" onClick={() => replay()}>Play again</button>
-          </div>
-        );
-      } else if (moves === 9) {
-        status = (
-          <div>
-            <b>Draw!</b>
-            <br/>
-            <br/>
-            <br/>
-            <button className="button" onClick={() => replay()}>Play again</button>
-          </div>
-        );
-      } else {
-        status = <div><span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{next}</b></span> turn</div>;
-      }
-
-      modeButtonStyle = {display:'inline', marginLeft:'auto'};
-
-      display = (
-        <div className={styles.game}>
-          <Board 
-            squares={squares}
-            onClick={(i) => handleClick(i)}
-          />
-          <div className={styles.gameinfo}>
-            {status}
-          </div>
+  let display;
+  let modeButtonStyle = {display:'none'};
+  if (mode) {
+    const winner = calculateWinner(squares);
+    let status;
+    if (winner) {
+      status = (
+        <div>
+          <b><span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{winner}</b></span> wins!</b>
+          <br/>
+          <br/>
+          <br/>
+          <button className="button" onClick={() => replay()}>Play again</button>
+        </div>
+      );
+    } else if (moves === 9) {
+      status = (
+        <div>
+          <b>Draw!</b>
+          <br/>
+          <br/>
+          <br/>
+          <button className="button" onClick={() => replay()}>Play again</button>
         </div>
       );
     } else {
-      display = (
-        <div className="mode">
-          <h3>Game Mode</h3>
-          <button className="button" onClick={() => selectMode('singleplayer')}>Single player</button>
-          &nbsp;&nbsp;
-          <button className="button" onClick={() => selectMode('twoplayer')}>Two player</button>
-          <br/>
-          <br/>
-          <Link href="/tictactoe-interactive">
-            <a className="button">Invite or join a friend</a>
-          </Link>
-          <br/>
-        </div>
-      );
+      status = <div><span style={{fontSize:'24px',fontFamily:'Indie Flower, cursive'}}><b>{next}</b></span> turn</div>;
     }
-    setDisplay(display);
-    setModeButtonStyle(modeButtonStyle);
+
+    modeButtonStyle = {display:'inline', marginLeft:'auto'};
+
+    display = (
+      <div className={styles.game}>
+        <Board 
+          squares={squares}
+          onClick={(i) => handleClick(i)}
+        />
+        <div className={styles.gameinfo}>
+          {status}
+        </div>
+      </div>
+    );
+  } else {
+    display = (
+      <div className="mode">
+        <h3>Game Mode</h3>
+        <button className="button" onClick={() => selectMode('singleplayer')}>Single player</button>
+        &nbsp;&nbsp;
+        <button className="button" onClick={() => selectMode('twoplayer')}>Two player</button>
+        <br/>
+        <br/>
+        <Link href="/tictactoe-interactive">
+          <a className="button">Invite or join a friend</a>
+        </Link>
+        <br/>
+      </div>
+    );
   }
 
   return (
@@ -185,7 +175,7 @@ export default function TicTacToe() {
       <Head>
         <title>Tic-Tac-Toe</title>
       </Head>
-      <CSSTransition in={inProp} appear={true} timeout={500} classNames="page">
+      <CSSTransition in={inProp} appear={true} unmountOnExit timeout={500} classNames="page">
         <div>
           <div style={{display:'flex'}}>
             <button className="button" onClick={() => exit('/')}>&larr;</button>
@@ -197,7 +187,7 @@ export default function TicTacToe() {
           </div>
         </div>
       </CSSTransition>
-      <CSSTransition in={inProp} appear={true} timeout={500} classNames="panel-transition">
+      <CSSTransition in={inProp} appear={true} unmountOnExit timeout={500} classNames="panel-transition">
         <div className="panel"/>
       </CSSTransition>
     </div>

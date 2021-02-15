@@ -216,7 +216,7 @@ export default function TicTacToeInteractive() {
 			<Head>
         <title>Tic-Tac-Toe</title>
       </Head>
-      <CSSTransition in={inProp} enter={false} timeout={500} classNames="page">
+      <CSSTransition in={inProp} enter={false} unmountOnExit timeout={500} classNames="page">
         <div>
 		      <div style={{display:'flex'}}>
 		        <button className="button" onClick={() => exit('/')}>&larr;</button>
@@ -227,7 +227,7 @@ export default function TicTacToeInteractive() {
 		      </div>
 		    </div>
 		  </CSSTransition>
-      <CSSTransition in={inProp} enter={false} timeout={500} classNames="panel-transition">
+      <CSSTransition in={inProp} enter={false} unmountOnExit timeout={500} classNames="panel-transition">
         <div className="panel"/>
       </CSSTransition>
     </div>

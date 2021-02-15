@@ -124,22 +124,6 @@ input:active {
   outline: none;
 }
 
-.fadeOutUpElement {
-  animation: fadeOutUp 1s ease-in 1 normal both ;
-}
-
-@keyframes fadeOutUp {
-  0% {
-    opacity: 1;
-    transform: translate3d(0, 100%, 0);
-  }
-
-  100% {
-    opacity: 0;
-    transform: none;
-  }
-}
-
 .panel {
   position: absolute;
   left: 0;
