@@ -420,74 +420,74 @@ function miniMax(state, moves, depth, alpha, beta, player) {
 // 	return value;
 // }
 
-function score(state) {
-	let score = 0;
-	let centerCount = 0;
-	for (let i = 0; i < 6; i++) {
-		if (state[3][i] === 'yellow') {
-			centerCount++;
-		}
-	}
-	score += centerCount*3;
-	let line;
-	for (let j = 0; j < 7; j++) {
-		line = [];
-		for (let i = 0; i < 3; i++) {
-			for (let k = i; k < i+4; k++) {
-				line.push(state[j][k]);
-			}
-			score += lineScore(line);
-		}
-	}
-	for (let i = 0; i < 6; i++) {
-		line = [];
-		for (let j = 0; j < 4; j++) {
-			for (let k = j; k < j+4; k++) {
-				line.push(state[k][i]);
-			}
-			score += lineScore(line);
-		}
-	}
-	for (let i = 0; i < 3; i++) {
-		line = [];
-		for (let j = 0; j < 4; j++) {
-			for (let k = 0; k < 4; k++) {
-				line.push(state[j][i+k]);
-			}
-			score += lineScore(line);
-		}
-	}
-	for (let i = 5; i > 2; i--) {
-		line = [];
-		for (let j = 0; j < 4; j++) {
-			for (let k = 0; k < 4; k++) {
-				line.push(state[j][i-k]);
-			}
-			score += lineScore(line);
-		}
-	}
-	return score;
-}
+// function score(state) {
+// 	let score = 0;
+// 	let centerCount = 0;
+// 	for (let i = 0; i < 6; i++) {
+// 		if (state[3][i] === 'yellow') {
+// 			centerCount++;
+// 		}
+// 	}
+// 	score += centerCount*3;
+// 	let line;
+// 	for (let j = 0; j < 7; j++) {
+// 		line = [];
+// 		for (let i = 0; i < 3; i++) {
+// 			for (let k = i; k < i+4; k++) {
+// 				line.push(state[j][k]);
+// 			}
+// 			score += lineScore(line);
+// 		}
+// 	}
+// 	for (let i = 0; i < 6; i++) {
+// 		line = [];
+// 		for (let j = 0; j < 4; j++) {
+// 			for (let k = j; k < j+4; k++) {
+// 				line.push(state[k][i]);
+// 			}
+// 			score += lineScore(line);
+// 		}
+// 	}
+// 	for (let i = 0; i < 3; i++) {
+// 		line = [];
+// 		for (let j = 0; j < 4; j++) {
+// 			for (let k = 0; k < 4; k++) {
+// 				line.push(state[j][i+k]);
+// 			}
+// 			score += lineScore(line);
+// 		}
+// 	}
+// 	for (let i = 5; i > 2; i--) {
+// 		line = [];
+// 		for (let j = 0; j < 4; j++) {
+// 			for (let k = 0; k < 4; k++) {
+// 				line.push(state[j][i-k]);
+// 			}
+// 			score += lineScore(line);
+// 		}
+// 	}
+// 	return score;
+// }
 
-function lineScore(line) {
-	let redCount, yellowCount, nullCount;
-	for (let player of line) {
-		if (player === 'red') {
-			redCount++;
-		} else if (player === 'yellow') {
-			yellowCount++;
-		} else {
-			nullCount++;
-		}
-	}
-	let score = 0;
-	if (yellowCount === 3 && nullCount === 1) {
-		score += 5;
-	} else if (yellowCount === 2 && nullCount === 2) {
-		score += 2;
-	} 
-	if (redCount === 3 && nullCount === 1) {
-		score -= 6;
-	} 
-	return score;
-}
+// function lineScore(line) {
+// 	let redCount, yellowCount, nullCount;
+// 	for (let player of line) {
+// 		if (player === 'red') {
+// 			redCount++;
+// 		} else if (player === 'yellow') {
+// 			yellowCount++;
+// 		} else {
+// 			nullCount++;
+// 		}
+// 	}
+// 	let score = 0;
+// 	if (yellowCount === 3 && nullCount === 1) {
+// 		score += 5;
+// 	} else if (yellowCount === 2 && nullCount === 2) {
+// 		score += 2;
+// 	} 
+// 	if (redCount === 3 && nullCount === 1) {
+// 		score -= 6;
+// 	} 
+// 	return score;
+// }

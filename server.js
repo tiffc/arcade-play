@@ -72,14 +72,6 @@ io.on('connect', socket => {
     socket.leave(code);
     console.log(name + ' has left game ' + code);
   });
-  
-  // socket.on('disconnect', () => {
-  //   for (let code of socket.rooms) {
-  //     socket.to(code).emit('exit');
-  //     games.delete(code);
-  //     updatePlayers
-  //   socket.disconnect(true);
-  // });
 });
 
 nextApp.prepare().then(() => {
